@@ -1,0 +1,121 @@
+#DRBC precompile first line 	// rule 1
+#DRBC precompile list		// rule 2
+
+// funDecl, parms rule 11-16
+int add(int cat, dog)
+{
+	return cat+dog;
+}
+
+breed()
+{
+	return;
+}
+
+rename(int num[])
+{
+    return;
+}
+
+int main()
+{
+    // declarations
+    int cats, dogs;
+    static int maxAnimals: 10;
+    char names[10];
+    bool haveCat, haveDog;
+    int happy;
+
+    int i,j;
+    // constants
+    names[0] = 'c';
+    names[1] = "FLUFFY";
+
+//    // rule 17, declarations
+//	int x:5;	// rule 9, 10, 5, 8 and 4??
+//	int y, z, l, m;	// rule 7
+//	static int abc:123;	// scoped rule 6
+//	bool k;
+//	int a[5];
+//	char letter;
+
+//    int i, j;
+	// in class rule 19 and 20
+	for i=0 to 10 do {
+		for j=0 to 10 by 2 do
+			if(haveCat == true) then happy += 20;
+			else while(haveDog == true) do
+				if(haveCat != false) then happy -= 100;
+        break;
+	}
+
+//	// in class rule 18 matched
+//	while(happy == 0) do {
+//		if(goodvibes > 0)then {
+//			happy += 1;
+//		}
+//	}
+	// matched
+//	for m=0 to 6	// rule 18
+//	do{
+//		if x < y	// rule 20, 33
+//		then y += 1;	// rule 28
+//			break;
+//	}
+    while(haveCat == true) do {
+        happy += 100;
+
+//    while(salvation == true) do {
+//        haveGod = true;
+//        happiness += 999999;
+//        death -= 999999;
+//        life *= 999999;
+//    }
+
+    if(cats < dogs or cats == dogs)
+    then happy -= 10;
+    else happy *= 10;
+
+//	if (x < y or x == y)
+//	then y-= 1;
+//	else y *= 1;
+
+    if(cats > dogs and cats == happy)
+    then dogs *= 2;
+
+//	if x >y and x == y
+//	then y *= 1;
+
+    if(cats <= dogs or cats >= dogs)
+    then dogs -= 1;
+
+//	if x <= y or x >= y
+//	then x = 10;
+
+    if(cats != dogs)
+    then happy = 10;
+//	if x != y
+//	then x = 20;
+
+	// operators
+    happy = cats + dogs;
+    happy = cats - dogs;
+    happy = cats/dogs;
+    happy = cats*dogs;
+    happy = cats%dogs;
+    happy--;
+    happy++;
+//	z = x+y;
+//	z = x-y;
+//	z = x/y;
+//	z = x*y;
+//	z = x%y;
+//	z--;
+//	z++;
+
+	// call
+	happy = add(cats,dogs);
+
+//	RETURN 0;	// rule 25
+    return 0;
+}
