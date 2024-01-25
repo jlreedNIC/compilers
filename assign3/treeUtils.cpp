@@ -66,20 +66,53 @@ TreeNode *newDeclNode(DeclKind kind,
 
 TreeNode *newStmtNode(StmtKind kind,
                       TokenData *token,
-                      TreeNode *c0=NULL,
-                      TreeNode *c1=NULL,
-                      TreeNode *c2=NULL)
+                      TreeNode *c0,
+                      TreeNode *c1,
+                      TreeNode *c2)
 {
+    TreeNode *newNode = new TreeNode;
 
+    newNode->kind.stmt = kind;
+    // newNode->type = type;
+
+    // setting token data??
+    newNode->attr.op = token->tokenclass;
+    newNode->attr.value = token->nvalue;
+    newNode->attr.cvalue = token->cvalue;
+    newNode->attr.name = token->svalue;
+    newNode->attr.string = token->tokenstr;
+
+    newNode->child[0] = c0;
+    newNode->child[1] = c1;
+    newNode->child[2] = c2;
+
+    return newNode;
 }
 
 TreeNode *newExpNode(ExpKind kind,
                      TokenData *token,
-                     TreeNode *c0=NULL,
-                     TreeNode *c1=NULL,
-                     TreeNode *c2=NULL)
+                     TreeNode *c0,
+                     TreeNode *c1,
+                     TreeNode *c2)
 {
 
+    TreeNode *newNode = new TreeNode;
+
+    newNode->kind.exp = kind;
+    // newNode->type = type;
+
+    // setting token data??
+    newNode->attr.op = token->tokenclass;
+    newNode->attr.value = token->nvalue;
+    newNode->attr.cvalue = token->cvalue;
+    newNode->attr.name = token->svalue;
+    newNode->attr.string = token->tokenstr;
+
+    newNode->child[0] = c0;
+    newNode->child[1] = c1;
+    newNode->child[2] = c2;
+
+    return newNode;
 }
 
 char *tokenToStr(int type)
