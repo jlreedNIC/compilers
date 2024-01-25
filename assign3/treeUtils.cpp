@@ -115,9 +115,23 @@ TreeNode *newExpNode(ExpKind kind,
     return newNode;
 }
 
+// need to know what string should be returned
 char *tokenToStr(int type)
 {
+    char *str;
 
+    if (type == DeclK)
+        strcpy(str, "DECL");
+    // str = "DECL";
+    else if (type == StmtK)
+        // str = "STMT";
+        strcpy(str, "STMT");
+    // else if(type == ExpK)
+    else
+        // str = "EXPR";
+        strcpy(str, "EXPR");
+
+    return str;
 }
 
 char *expTypeToStr(ExpType type, bool isArray=false, bool isStatic=false)
