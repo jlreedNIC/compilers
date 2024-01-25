@@ -34,6 +34,8 @@ TreeNode *cloneNode(TreeNode *currnode)
     newNode->varKind = currnode->varKind;
     newNode->offset = currnode->offset;
     newNode->size = currnode->size;
+
+    return newNode;
 }
 
 TreeNode *newDeclNode(DeclKind kind,
