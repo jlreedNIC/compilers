@@ -154,10 +154,12 @@ char *expTypeToStr(ExpType type, bool isArray, bool isStatic)
 
 void printTreeNode(FILE *out, TreeNode *syntaxTree, bool showExpType, bool showAllocation)
 {
-
+    // do something here
+    return;
 }
 
 void printTree(FILE *out, TreeNode *syntaxTree, bool showExpType, bool showAllocation)
 {
-    
+    // do something here
+    return;
 }
