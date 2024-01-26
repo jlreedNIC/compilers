@@ -134,9 +134,22 @@ char *tokenToStr(int type)
     return str;
 }
 
-char *expTypeToStr(ExpType type, bool isArray=false, bool isStatic=false)
+char *expTypeToStr(ExpType type, bool isArray, bool isStatic)
 {
+    char *str;
 
+    if (type == Void)
+        strcpy(str, "VOID");
+    else if (type == Integer)
+        strcpy(str, "INT");
+    else if (type == Boolean)
+        strcpy(str, "BOOL");
+    else if(type == Char)
+        strcpy(str, "CHAR");
+    else
+        strcpy(str, "UNDF");
+
+    return str;
 }
 
 void printTreeNode(FILE *out, TreeNode *syntaxTree, bool showExpType, bool showAllocation)
