@@ -100,6 +100,9 @@ decl : varDecl {$$ = $1;}
    | funDecl {$$ = $1;}
    ;
 
+compoundstmt : '{' localDecls stmtList '}' {$$ = newStmtNode(StmtKind::CompoundK, $1, $2, $3);}
+   ;
+
 
 
 program  :  program term
