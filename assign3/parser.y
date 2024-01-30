@@ -8,6 +8,30 @@
 #include "dot.h"
 using namespace std;
 
+int numErrors;
+int numWarnings;
+extern int line;
+extern int yylex();
+TreeNode *addSibling(TreeNode *t, TreeNode *s)
+{
+   // make sure s is not null. If it is this s a major error. Exit the program!
+   // Make sure t is not null. If it is, just return s
+   // look down t’s sibling list until you fin with with sibblin = null (the end o f the lsit) and add s there.
+   return s;
+}
+
+// pass the static and type attribute down the sibling list
+void setType(TreeNode *t, ExpType type, bool isStatic)
+{
+   while (t) 
+   {
+      // set t->type and t->isStatic
+      // t = t->sibling;
+   }
+}
+// the syntax tree goes here
+TreeNode *syntaxTree;
+
 extern "C" int yylex();
 extern "C" int yyparse();
 extern "C" FILE *yyin;
@@ -31,11 +55,14 @@ void printToken(TokenData myData, string tokenName, int type = 0) {
 %union
 {
    struct   TokenData tinfo ;
-   // struct   TreeNode *tree;
-   // ExpType  type;
+   struct   TreeNode *tree;
+   ExpType  type;
 }
 
-// get rid of below
+// tree data?
+%type <tree> parmIdList parmId stmt matched iterRange unmatched expstmt compoundstmt localDecls stmtList returnstmt breakstmt
+
+// token data
 %token   <tinfo>  OP
 %token   <tinfo>  NEQ LEQ GEQ
 %token   <tinfo>  MAX MIN
@@ -53,9 +80,8 @@ void printToken(TokenData myData, string tokenName, int type = 0) {
 %token   <tinfo>  RETURN BREAK
 %token   <tinfo>  SUBASS ADDASS MULASS DIVASS
 %token   <tinfo>  EQ
-%type <tinfo>  term program
+%type    <tinfo>  term program
 
-%type <tree> parmIdList parmId stmt matched iterRange unmatched expstmt compoundstmt localDecls stmtList returnstmt breakstmt
 
 %%
 program : precomList declList {syntaxTree = $2;}
