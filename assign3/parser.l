@@ -27,9 +27,9 @@ int setValue(int linenum, int tokenClass, char *svalue) {
          // yylval.tinfo.nvalue = hmmmm ..... I don't need this yet, but
          break;
 
-    case OP:
-         // yylval.tinfo.cvalue = hmmm..... What should I set it to?
-         break;
+//     case OP:
+//          // yylval.tinfo.cvalue = hmmm..... What should I set it to?
+//          break;
     }
 
 
@@ -49,7 +49,7 @@ limitters   [\;\,\(\)\{\}\[\]]
 op    [\-\+\*\/\%]
 whitespace  [\ \t]
 %%
-[\(\)\{\}\[\]\+\=\-\;\:\,\<\>\*\/\%\?]         { return setValue(line, OP, yytext); } // single char tokens
+[\(\)\{\}\[\]\+\=\-\;\:\,\<\>\*\/\%\?]         { return setValue(line, yytext[0], yytext); } // single char tokens
 
 [\/][\/].*      { return setValue(line, COMMENT, yytext); }
 

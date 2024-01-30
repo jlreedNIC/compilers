@@ -60,7 +60,8 @@ void printToken(TokenData myData, string tokenName, int type = 0) {
 }
 
 // tree data?
-%type <tree> parmIdList parmId stmt matched iterRange unmatched expstmt compoundstmt localDecls stmtList returnstmt breakstmt
+%type    <tree>   parmIdList parmId stmt matched iterRange unmatched expstmt compoundstmt localDecls stmtList returnstmt breakstmt
+%type    <tree>   precomList declList decl varDecl funDecl
 
 // token data
 %token   <tinfo>  OP
