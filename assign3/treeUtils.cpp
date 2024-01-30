@@ -45,23 +45,35 @@ TreeNode *newDeclNode(DeclKind kind,
                       TreeNode *c1,
                       TreeNode *c2)  // save TokenData block!!
 {
-    TreeNode *newNode = new TreeNode;
 
+    // did in class
+    TreeNode *newNode = (TreeNode *)malloc(sizeof(TreeNode));
+    newNode->nodekind = NodeKind::DeclK;
     newNode->kind.decl = kind;
-    newNode->type = type;
-
-    // setting token data??
-    newNode->attr.op = token->tokenclass;
-    newNode->attr.value = token->nvalue;
-    newNode->attr.cvalue = token->cvalue;
-    newNode->attr.name = token->svalue;
-    newNode->attr.string = token->tokenstr;
-
     newNode->child[0] = c0;
     newNode->child[1] = c1;
     newNode->child[2] = c2;
-    
+
     return newNode;
+
+
+    // TreeNode *newNode = new TreeNode;
+
+    // newNode->kind.decl = kind;
+    // newNode->type = type;
+
+    // // setting token data??
+    // newNode->attr.op = token->tokenclass;
+    // newNode->attr.value = token->nvalue;
+    // newNode->attr.cvalue = token->cvalue;
+    // newNode->attr.name = token->svalue;
+    // newNode->attr.string = token->tokenstr;
+
+    // newNode->child[0] = c0;
+    // newNode->child[1] = c1;
+    // newNode->child[2] = c2;
+    
+    // return newNode;
 }
 
 TreeNode *newStmtNode(StmtKind kind,
@@ -106,24 +118,33 @@ TreeNode *newExpNode(ExpKind kind,
                      TreeNode *c1,
                      TreeNode *c2)
 {
-
-    TreeNode *newNode = new TreeNode;
-
+    // did in class
+    TreeNode *newNode = (TreeNode *)malloc(sizeof(TreeNode));
+    newNode->nodekind = NodeKind::ExpK;
     newNode->kind.exp = kind;
-    // newNode->type = type;
-
-    // setting token data??
-    newNode->attr.op = token->tokenclass;
-    newNode->attr.value = token->nvalue;
-    newNode->attr.cvalue = token->cvalue;
-    newNode->attr.name = token->svalue;
-    newNode->attr.string = token->tokenstr;
-
     newNode->child[0] = c0;
     newNode->child[1] = c1;
     newNode->child[2] = c2;
 
     return newNode;
+
+    // TreeNode *newNode = new TreeNode;
+
+    // newNode->kind.exp = kind;
+    // // newNode->type = type;
+
+    // // setting token data??
+    // newNode->attr.op = token->tokenclass;
+    // newNode->attr.value = token->nvalue;
+    // newNode->attr.cvalue = token->cvalue;
+    // newNode->attr.name = token->svalue;
+    // newNode->attr.string = token->tokenstr;
+
+    // newNode->child[0] = c0;
+    // newNode->child[1] = c1;
+    // newNode->child[2] = c2;
+
+    // return newNode;
 }
 
 // need to know what string should be returned
