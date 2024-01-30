@@ -88,7 +88,9 @@ void printToken(TokenData myData, string tokenName, int type = 0) {
 program : precomList declList {syntaxTree = $2;}
    ;
 
-precomList : precomList 
+precomList : precomList PRECOMPILER {}
+   | PRECOMPILER {}
+   ;
 
 declList : declList decl {$$ = addSibling($1, $2);}
    | decl {$$ = $1;}
@@ -151,7 +153,10 @@ void yyerror (const char *msg)
 
 int main(int argc, char **argv) 
 {
-   //yylval.tinfo.linenum = 1;
+   yylvala.tinfo = (TokenData*)malloc(sizeof(TokenData));
+   yylvlal.tree = (TreeNode*)malloc(sizeof(TreeNode));
+   yylval.tinfo->linenum = 1;
+
    int index;
    char *file = NULL;
    bool dotAST = false;             // make dot file of AST

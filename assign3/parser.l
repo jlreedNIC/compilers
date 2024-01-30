@@ -12,23 +12,23 @@ char *lastToken=(char *)"";
 //extern int numErrors;
 
 int setValue(int linenum, int tokenClass, char *svalue) {
-    yylval.tinfo.tokenclass = tokenClass;
-    yylval.tinfo.linenum = linenum;
-    yylval.tinfo.tokenstr = strdup(svalue);
-    yylval.tinfo.cvalue = '@';
-    yylval.tinfo.nvalue = 777;
-    yylval.tinfo.svalue = NULL;
+    yylval.tinfo->tokenclass = tokenClass;
+    yylval.tinfo->linenum = linenum;
+    yylval.tinfo->tokenstr = strdup(svalue);
+    yylval.tinfo->cvalue = '@';
+    yylval.tinfo->nvalue = 777;
+    yylval.tinfo->svalue = NULL;
 
-    yylval.tinfo.tokenstr = lastToken = strdup(svalue);
+    yylval.tinfo->tokenstr = lastToken = strdup(svalue);
 
     switch (tokenClass) {
 
     case NUMCONST:
-         // yylval.tinfo.nvalue = hmmmm ..... I don't need this yet, but
+         // yylval.tinfo->nvalue = hmmmm ..... I don't need this yet, but
          break;
 
 //     case OP:
-//          // yylval.tinfo.cvalue = hmmm..... What should I set it to?
+//          // yylval.tinfo->cvalue = hmmm..... What should I set it to?
 //          break;
     }
 
