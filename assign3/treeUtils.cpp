@@ -60,7 +60,7 @@ TreeNode *newDeclNode(DeclKind kind,
     newNode->child[0] = c0;
     newNode->child[1] = c1;
     newNode->child[2] = c2;
-
+    
     return newNode;
 }
 

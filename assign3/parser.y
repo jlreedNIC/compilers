@@ -1,8 +1,11 @@
 %{
-#include <cstdio>
+#include <stdio.h>
 #include <iostream>
+#include <stdlib.h>
 #include <unistd.h>
+#include "treeUtils.h"
 #include "scanType.h"
+#include "dot.h"
 using namespace std;
 
 extern "C" int yylex();
@@ -28,7 +31,11 @@ void printToken(TokenData myData, string tokenName, int type = 0) {
 %union
 {
    struct   TokenData tinfo ;
+   // struct   TreeNode *tree;
+   // ExpType  type;
 }
+
+// get rid of below
 %token   <tinfo>  OP
 %token   <tinfo>  NEQ LEQ GEQ
 %token   <tinfo>  MAX MIN
@@ -36,26 +43,36 @@ void printToken(TokenData myData, string tokenName, int type = 0) {
 %token   <tinfo>  AND OR NOT
 %token   <tinfo>  PRECOMPILER
 %token   <tinfo>  NUMCONST
-%token   <tinfo>  ERROR
-%token   <tinfo>  ID
-%token   <tinfo>  INT
-%token   <tinfo>  CHAR
+%token   <tinfo>  ERROR COMMENT
+%token   <tinfo>  ID INT CHAR
 %token   <tinfo>  IF THEN ELSE
-%token   <tinfo>  WHILE
-%token   <tinfo>  DO
-%token   <tinfo>  FOR
-%token   <tinfo>  TO BY
-%token   <tinfo>  COMMENT
+%token   <tinfo>  WHILE DO FOR TO BY
 %token   <tinfo>  STRINGCONST CHARCONST
-%token   <tinfo>  BOOL
+%token   <tinfo>  BOOL BOOLCONST
 %token   <tinfo>  STATIC
-%token   <tinfo>  RETURN
-%token   <tinfo>  BREAK
-%token   <tinfo>  BOOLCONST
+%token   <tinfo>  RETURN BREAK
 %token   <tinfo>  SUBASS ADDASS MULASS DIVASS
 %token   <tinfo>  EQ
 %type <tinfo>  term program
+
+%type <tree> parmIdList parmId stmt matched iterRange unmatched expstmt compoundstmt localDecls stmtList returnstmt breakstmt
+
 %%
+program : precomList declList {syntaxTree = $2;}
+   ;
+
+precomList : precomList 
+
+declList : declList decl {$$ = addSibling($1, $2);}
+   | decl {$$ = $1;}
+   ;
+
+decl : varDecl {$$ = $1;}
+   | funDecl {$$ = $1;}
+   ;
+
+
+
 program  :  program term
    |  term  {$$=$1;}
    ;
@@ -104,23 +121,50 @@ void yyerror (const char *msg)
 { 
    cout << "Error: " <<  msg << endl;
 }
-int main(int argc, char **argv) {
-   yylval.tinfo.linenum = 1;
-   int option, index;
+
+int main(int argc, char **argv) 
+{
+   //yylval.tinfo.linenum = 1;
+   int index;
    char *file = NULL;
+   bool dotAST = false;             // make dot file of AST
    extern FILE *yyin;
-   while ((option = getopt (argc, argv, "")) != -1)
-      switch (option)
+
+   int ch;
+
+   while ((ch = getopt(argc, argv, "d")) != -1) 
+   {
+      switch (ch) 
       {
-      default:
-         ;
+         case 'd':
+                 dotAST = true;
+                 break;
+         case '?':
+         default:
+                 //usage();
+               ;
       }
+   }
+
    if ( optind == argc ) yyparse();
-   for (index = optind; index < argc; index++) 
+   for (index = optind; index < argc; index++)
    {
       yyin = fopen (argv[index], "r");
       yyparse();
       fclose (yyin);
+   }
+   if (numErrors==0) 
+   {
+      printTree(stdout, syntaxTree, true, true);
+      if(dotAST) {
+         printDotTree(stdout, syntaxTree, false, false);
+      }
+   }
+   else 
+   {
+      printf("-----------\n");
+      printf("Errors: %d\n", numErrors);
+      printf("-----------\n");
    }
    return 0;
 }
