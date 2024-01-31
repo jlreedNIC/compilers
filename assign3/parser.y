@@ -54,14 +54,17 @@ void printToken(TokenData myData, string tokenName, int type = 0) {
 %}
 %union
 {
-   struct   TokenData tinfo ;
+   struct   TokenData tinfo;
+//   TokenData *tokenData;
    struct   TreeNode *tree;
    ExpType  type;
 }
 
 // tree data?
-%type    <tree>   parmIdList parmId stmt matched iterRange unmatched expstmt compoundstmt localDecls stmtList returnstmt breakstmt
+%type    <tree>   parmIdList parmId stmt matched iterRange unmatched expstmt
+%type    <tree>   compoundstmt localDecls stmtList returnstmt breakstmt
 %type    <tree>   precomList declList decl varDecl funDecl
+%type    <tree>   program
 
 // token data
 %token   <tinfo>  OP
@@ -81,8 +84,9 @@ void printToken(TokenData myData, string tokenName, int type = 0) {
 %token   <tinfo>  RETURN BREAK
 %token   <tinfo>  SUBASS ADDASS MULASS DIVASS
 %token   <tinfo>  EQ
-%type    <tinfo>  term program
+//%type    <tinfo>  term program
 
+//%type   <tree>  program compoundstmt
 
 %%
 program : precomList declList {syntaxTree = $2;}
