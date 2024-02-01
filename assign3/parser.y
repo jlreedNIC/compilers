@@ -188,8 +188,8 @@ minmaxExp : minmaxExp minmaxop sumExp {}
    | sumExp {}
    ;
 
-minmaxop : ':>:' {}
-   | ':<:' {}
+minmaxop : ":>:" {}
+   | ":<:" {}
    ;
 
 sumExp : sumExp sumop mulExp {}
@@ -247,7 +247,7 @@ constant : NUMCONST {}
    | STRINGCONST {}
    | BOOLCONST {}
    ;
-   
+
 /*
 program  :  program term
    |  term  {$$=$1;}
