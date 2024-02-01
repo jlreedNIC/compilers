@@ -112,57 +112,57 @@ compoundstmt : '{' localDecls stmtList '}' {$$ = newStmtNode(StmtKind::CompoundK
    ;
 
 matched : IF simpleExp THEN matched ELSE matched {}
-    | WHILE simpleExp DO matched {}
-    | FOR ID '=' iterRange DO matched {}
-    | expstmt {}
-    | compoundstmt {$$ = $1;}
-    | returnstmt {}
-    | breakstmt {}
-    ;
+   | WHILE simpleExp DO matched {}
+   | FOR ID '=' iterRange DO matched {}
+   | expstmt {}
+   | compoundstmt {$$ = $1;}
+   | returnstmt {}
+   | breakstmt {}
+   ;
 
 stmt : matched {}
-    | unmatched {}
-    ;
+   | unmatched {}
+   ;
 
 parmId : ID {}
-    | ID '[' ']' {}
-    ;
+   | ID '[' ']' {}
+   ;
 
 parmIdList : parmIdList ',' parmId {}
-    | parmTypeList {}
-    ;
+   | parmTypeList {}
+   ;
 
 typeSpec : INT {$$ = ExpType::Integer;}
-    | BOOL {}
-    | CHAR {}
-    ;
+   | BOOL {}
+   | CHAR {}
+   ;
 
 funDecl : typeSpec ID '(' parms ')' stmt {}
-    | ID '(' parms ')' stmt {}//$$ = newDeclNode(DeclKind::FuncK, );}
-    ;
+   | ID '(' parms ')' stmt {}//$$ = newDeclNode(DeclKind::FuncK, );}
+   ;
 
 breakstmt : BREAK
-    ;
+   ;
 
 expstmt : exp {}
-    ;
+   ;
 
 exp : mutable assignop exp {}
-    | mutable INC {}
-    | mutable DEC {}
-    | simpleExp {}
-    | mutable assignop ERROR {}
-    ;
+   | mutable INC {}
+   | mutable DEC {}
+   | simpleExp {}
+   | mutable assignop ERROR {}
+   ;
 
 assignop : ADDASS {}
-    | SUBASS {}
-    | MULASS {}
-    | DIVASS {}
-    ;
+   | SUBASS {}
+   | MULASS {}
+   | DIVASS {}
+   ;
 
 simpleExp : simpleExp OR andExp {}
-    | andExp {}
-    ;
+   | andExp {}
+   ;
 
 /*
 program  :  program term
