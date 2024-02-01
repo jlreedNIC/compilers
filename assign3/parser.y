@@ -193,7 +193,7 @@ funDecl : typeSpec ID '(' parms ')' stmt {}
    | ID '(' parms ')' stmt {}//$$ = newDeclNode(DeclKind::FuncK, );}
    ;
 
-breakstmt : BREAK
+breakstmt : BREAK {}
    ;
 
 expstmt : exp {}
