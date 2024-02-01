@@ -133,7 +133,7 @@ parmList : parmList ';' parmTypeList {}
 
 parmTypeList : typeSpec parmIdList {}
    ;
-   
+
 compoundstmt : '{' localDecls stmtList '}' {$$ = newStmtNode(StmtKind::CompoundK, $1, $2, $3);}
    ;
 
@@ -144,6 +144,24 @@ matched : IF simpleExp THEN matched ELSE matched {}
    | compoundstmt {$$ = $1;}
    | returnstmt {}
    | breakstmt {}
+   ;
+
+iterRange : simpleExp TO simpleExp {}
+   | simpleExp TO simpleExp BY simpleExp {}
+   ;
+
+unmatched : IF simpleExp then stmt {}
+   | IF simpleExp THEN matched ELSE unmatched {}
+   | WHILE simpleExp DO unmatched {}
+   | FOR ID '=' iterRange DO unmatched {}
+   ;
+
+localDecls : localDecls scopedVarDecl {}
+   | /* empty */
+   ;
+
+scopedVarDecl : STATIC typeSpec varDeclList ';' {}
+   | typeSpec varDeclList ';' {}
    ;
 
 stmt : matched {}
