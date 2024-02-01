@@ -124,7 +124,7 @@ varDeclId : ID {}
    ;
 
 parms : parmList {}
-   | /* empty */
+   | /* empty */ {}
    ;
 
 parmList : parmList ';' parmTypeList {}
@@ -157,11 +157,11 @@ unmatched : IF simpleExp THEN stmt {}
    ;
 
 localDecls : localDecls scopedVarDecl {}
-   | /* empty */
+   | /* empty */ {}
    ;
 
 stmtList : stmtList stmt {}
-   | /* empty*/
+   | /* empty*/ {}
    ;
 
 returnstmt : RETURN ';' {}
@@ -287,7 +287,7 @@ call : ID '(' args ')' {}
    ;
 
 args : argList {}
-   | /* empty */
+   | /* empty */ {}
    ;
 
 argList : argList ',' exp {}
