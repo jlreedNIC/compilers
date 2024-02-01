@@ -164,6 +164,90 @@ simpleExp : simpleExp OR andExp {}
    | andExp {}
    ;
 
+andExp : andExp AND unaryRelExp {}
+   | unaryRelExp {}
+   ;
+
+unaryRelExp : NOT unaryRelExp {}
+   | relExp {}
+   ;
+
+relExp : minmaxExp relop minmaxExp {}
+   | minmaxExp {}
+   ;
+
+relop : LEQ {}
+   | '<' {}
+   | '>' {}
+   | GEQ {}
+   | EQ {}
+   | NEQ {}
+   ;
+
+minmaxExp : minmaxExp minmaxop sumExp {}
+   | sumExp {}
+   ;
+
+minmaxop : ':>:' {}
+   | ':<:' {}
+   ;
+
+sumExp : sumExp sumop mulExp {}
+   | mulExp {}
+   ;
+
+sumop : '+' {}
+   | '-' {}
+   ;
+
+mulExp : mulExp mulop unaryExp {}
+   | unaryExp {}
+   ;
+
+mulop : '*' {}
+   | '/' {}
+   | '%' {}
+   ;
+
+unaryExp : unaryop unaryExp {}
+   | factor {}
+   ;
+
+unaryop : '-' {}
+   | '*' {}
+   | '?' {}
+   ;
+
+factor : immutable {}
+   | mutable {}
+   ;
+
+mutable : ID {}
+   | ID '[' exp ']' {}
+   ;
+
+immutable : '(' exp ')' {}
+   | call {}
+   | constant {}
+   ;
+
+call : ID '(' args ')' {}
+   ;
+
+args : argList {}
+   | /* empty */
+   ;
+
+argList : argList ',' exp {}
+   | exp {}
+   ;
+
+constant : NUMCONST {}
+   | CHARCONST {}
+   | STRINGCONST {}
+   | BOOLCONST {}
+   ;
+   
 /*
 program  :  program term
    |  term  {$$=$1;}
