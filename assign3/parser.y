@@ -160,6 +160,14 @@ localDecls : localDecls scopedVarDecl {}
    | /* empty */
    ;
 
+stmtList : stmtList stmt {}
+   | /* empty*/
+   ;
+
+returnstmt : RETURN ';' {}
+   | RETURN exp ';' {}
+   ;
+
 scopedVarDecl : STATIC typeSpec varDeclList ';' {}
    | typeSpec varDeclList ';' {}
    ;
