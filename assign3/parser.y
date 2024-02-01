@@ -87,7 +87,7 @@ void printToken(TokenData myData, string tokenName, int type = 0) {
 %token   <tinfo>  RETURN BREAK
 %token   <tinfo>  SUBASS ADDASS MULASS DIVASS
 %token   <tinfo>  EQ
-%token   <tinfo> FIRSTSTOP LASTSTOP
+%token   <tinfo>  FIRSTSTOP LASTSTOP
 //%type    <tinfo>  term program
 
 //%type   <tree>  program compoundstmt
@@ -108,6 +108,32 @@ decl : varDecl {$$ = $1;}
    | funDecl {$$ = $1;}
    ;
 
+varDecl : typeSpec varDeclList ';' {}
+   ;
+
+varDeclList : varDeclList ',' varDeclInit {}
+   | varDeclInit {}
+   ;
+
+varDeclInit : varDeclId {}
+   | varDeclId ':' simpleExp {}
+   ;
+
+varDeclId : ID {}
+   | ID '[' NUMCONST ']' {}
+   ;
+
+parms : parmList {}
+   | /* empty */
+   ;
+
+parmList : parmList ';' parmTypeList {}
+   | parmTypeList {}
+   ;
+
+parmTypeList : typeSpec parmIdList {}
+   ;
+   
 compoundstmt : '{' localDecls stmtList '}' {$$ = newStmtNode(StmtKind::CompoundK, $1, $2, $3);}
    ;
 
