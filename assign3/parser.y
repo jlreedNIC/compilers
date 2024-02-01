@@ -150,7 +150,7 @@ iterRange : simpleExp TO simpleExp {}
    | simpleExp TO simpleExp BY simpleExp {}
    ;
 
-unmatched : IF simpleExp then stmt {}
+unmatched : IF simpleExp THEN stmt {}
    | IF simpleExp THEN matched ELSE unmatched {}
    | WHILE simpleExp DO unmatched {}
    | FOR ID '=' iterRange DO unmatched {}
