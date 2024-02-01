@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "treeUtils.h"
+#include "treeNodes.h"
 #include "scanType.h"
 #include "dot.h"
 using namespace std;
@@ -23,10 +24,12 @@ TreeNode *addSibling(TreeNode *t, TreeNode *s)
 // pass the static and type attribute down the sibling list
 void setType(TreeNode *t, ExpType type, bool isStatic)
 {
-   while (t) 
+   while (t != nullptr)
    {
-      // set t->type and t->isStatic
-      // t = t->sibling;
+      t->type = type;
+      t->isStatic = isStatic;
+//      set t->type and t->isStatic
+      t = t->sibling;
    }
 }
 // the syntax tree goes here
@@ -54,7 +57,7 @@ void printToken(TokenData myData, string tokenName, int type = 0) {
 %}
 %union
 {
-   struct   TokenData tinfo;
+   struct   TokenData *tinfo;
 //   TokenData *tokenData;
    struct   TreeNode *tree;
    ExpType  type;
@@ -84,6 +87,7 @@ void printToken(TokenData myData, string tokenName, int type = 0) {
 %token   <tinfo>  RETURN BREAK
 %token   <tinfo>  SUBASS ADDASS MULASS DIVASS
 %token   <tinfo>  EQ
+%token   <tinfo> FIRSTSTOP LASTSTOP
 //%type    <tinfo>  term program
 
 //%type   <tree>  program compoundstmt
@@ -107,8 +111,60 @@ decl : varDecl {$$ = $1;}
 compoundstmt : '{' localDecls stmtList '}' {$$ = newStmtNode(StmtKind::CompoundK, $1, $2, $3);}
    ;
 
+matched : IF simpleExp THEN matched ELSE matched {}
+    | WHILE simpleExp DO matched {}
+    | FOR ID '=' iterRange DO matched {}
+    | expstmt {}
+    | compoundstmt {$$ = $1;}
+    | returnstmt {}
+    | breakstmt {}
+    ;
 
+stmt : matched {}
+    | unmatched {}
+    ;
 
+parmId : ID {}
+    | ID '[' ']' {}
+    ;
+
+parmIdList : parmIdList ',' parmId {}
+    | parmTypeList {}
+    ;
+
+typeSpec : INT {$$ = ExpType::Integer;}
+    | BOOL {}
+    | CHAR {}
+    ;
+
+funDecl : typeSpec ID '(' parms ')' stmt {}
+    | ID '(' parms ')' stmt {}//$$ = newDeclNode(DeclKind::FuncK, );}
+    ;
+
+breakstmt : BREAK
+    ;
+
+expstmt : exp {}
+    ;
+
+exp : mutable assignop exp {}
+    | mutable INC {}
+    | mutable DEC {}
+    | simpleExp {}
+    | mutable assignop ERROR {}
+    ;
+
+assignop : ADDASS {}
+    | SUBASS {}
+    | MULASS {}
+    | DIVASS {}
+    ;
+
+simpleExp : simpleExp OR andExp {}
+    | andExp {}
+    ;
+
+/*
 program  :  program term
    |  term  {$$=$1;}
    ;
@@ -151,7 +207,7 @@ term  :
    |  INC {printToken(yylval.tinfo, "INC");}
    |  DEC {printToken(yylval.tinfo, "DEC");}
    |  ERROR    {cout << "ERROR(SCANNER Line " << yylval.tinfo.linenum << "): Invalid input character " << yylval.tinfo.tokenstr << endl; }
-   ;
+   ; */
 %%
 void yyerror (const char *msg)
 { 
