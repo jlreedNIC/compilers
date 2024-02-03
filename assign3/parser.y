@@ -15,6 +15,23 @@ extern int line;
 //extern int yylex();
 TreeNode *addSibling(TreeNode *t, TreeNode *s)
 {
+   if(s == nullptr)
+   {
+      exit(1);
+   }
+
+   if(t == nullptr)
+   {
+      return s;
+   }
+
+   TreeNode *ptr = new TreeNode;
+   ptr = t->sibling;
+   while(ptr != nullptr)
+   {
+      ptr = ptr->sibling;
+   }
+   ptr->sibling = s;
    // make sure s is not null. If it is this s a major error. Exit the program!
    // Make sure t is not null. If it is, just return s
    // look down t’s sibling list until you fin with with sibblin = null (the end o f the lsit) and add s there.
@@ -66,8 +83,8 @@ void printToken(TokenData myData, string tokenName, int type = 0) {
 // tree data?
 %type    <tree>   parmIdList parmId stmt matched iterRange unmatched expstmt
 %type    <tree>   compoundstmt localDecls stmtList returnstmt breakstmt
-%type    <tree>   precomList declList decl varDecl funDecl
-%type    <tree>   program
+%type    <tree>   precomList declList decl varDecl funDecl varDeclList
+%type    <tree>   program typeSpec
 
 // token data
 %token   <tinfo>  OP
@@ -96,8 +113,8 @@ void printToken(TokenData myData, string tokenName, int type = 0) {
 program : precomList declList {syntaxTree = $2;}
    ;
 
-precomList : precomList PRECOMPILER { cout << "I'm a node.\n"; }
-   | PRECOMPILER { cout << "I'm a node.\n"; }
+precomList : precomList PRECOMPILER { cout << "I'm a node.\n"; $$ = nullptr; }
+   | PRECOMPILER { cout << "I'm a node.\n"; $$ = nullptr; }
    ;
 
 declList : declList decl {$$ = addSibling($1, $2);}
@@ -108,7 +125,7 @@ decl : varDecl {$$ = $1;}
    | funDecl {$$ = $1;}
    ;
 
-varDecl : typeSpec varDeclList ';' { cout << "I'm a node.\n"; }
+varDecl : typeSpec varDeclList ';' { cout << "I'm a node.\n"; $$ = addSibling($1, $2); }
    ;
 
 varDeclList : varDeclList ',' varDeclInit { cout << "I'm a node.\n"; }
