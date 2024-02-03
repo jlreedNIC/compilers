@@ -47,7 +47,7 @@ TreeNode *newDeclNode(DeclKind kind,
 {
 
     // did in class
-    TreeNode *newNode = (TreeNode *)malloc(sizeof(TreeNode));
+    TreeNode *newNode = new TreeNode;
     newNode->nodekind = NodeKind::DeclK;
     newNode->kind.decl = kind;
     newNode->child[0] = c0;
@@ -83,7 +83,7 @@ TreeNode *newStmtNode(StmtKind kind,
                       TreeNode *c2)
 {
     // did in class
-    TreeNode *newNode = (TreeNode *)malloc(sizeof(TreeNode));
+    TreeNode *newNode = new TreeNode;
     newNode->nodekind = NodeKind::StmtK;
     newNode->kind.stmt = kind;
     newNode->child[0] = c0;
@@ -119,7 +119,7 @@ TreeNode *newExpNode(ExpKind kind,
                      TreeNode *c2)
 {
     // did in class
-    TreeNode *newNode = (TreeNode *)malloc(sizeof(TreeNode));
+    TreeNode *newNode = new TreeNode;
     newNode->nodekind = NodeKind::ExpK;
     newNode->kind.exp = kind;
     newNode->child[0] = c0;

@@ -12,7 +12,7 @@ using namespace std;
 int numErrors;
 int numWarnings;
 extern int line;
-extern int yylex();
+//extern int yylex();
 TreeNode *addSibling(TreeNode *t, TreeNode *s)
 {
    // make sure s is not null. If it is this s a major error. Exit the program!
@@ -36,8 +36,8 @@ void setType(TreeNode *t, ExpType type, bool isStatic)
 TreeNode *syntaxTree;
 
 extern "C" int yylex();
-extern "C" int yyparse();
-extern "C" FILE *yyin;
+//extern "C" int yyparse();
+//extern "C" FILE *yyin;
 
 void yyerror(const char *msg);
 
@@ -352,8 +352,8 @@ void yyerror (const char *msg)
 
 int main(int argc, char **argv) 
 {
-   yylvala.tinfo = (TokenData*)malloc(sizeof(TokenData));
-   yylvlal.tree = (TreeNode*)malloc(sizeof(TreeNode));
+   yylval.tinfo = (TokenData*)malloc(sizeof(TokenData));
+   yylval.tree = (TreeNode*)malloc(sizeof(TreeNode));
    yylval.tinfo->linenum = 1;
 
    int index;
