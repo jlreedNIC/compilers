@@ -96,8 +96,8 @@ void printToken(TokenData myData, string tokenName, int type = 0) {
 program : precomList declList {syntaxTree = $2;}
    ;
 
-precomList : precomList PRECOMPILER {}
-   | PRECOMPILER {}
+precomList : precomList PRECOMPILER { cout << "I'm a node.\n"; }
+   | PRECOMPILER { cout << "I'm a node.\n"; }
    ;
 
 declList : declList decl {$$ = addSibling($1, $2);}
@@ -108,196 +108,196 @@ decl : varDecl {$$ = $1;}
    | funDecl {$$ = $1;}
    ;
 
-varDecl : typeSpec varDeclList ';' {}
+varDecl : typeSpec varDeclList ';' { cout << "I'm a node.\n"; }
    ;
 
-varDeclList : varDeclList ',' varDeclInit {}
-   | varDeclInit {}
+varDeclList : varDeclList ',' varDeclInit { cout << "I'm a node.\n"; }
+   | varDeclInit { cout << "I'm a node.\n"; }
    ;
 
-varDeclInit : varDeclId {}
-   | varDeclId ':' simpleExp {}
+varDeclInit : varDeclId { cout << "I'm a node.\n"; }
+   | varDeclId ':' simpleExp { cout << "I'm a node.\n"; }
    ;
 
-varDeclId : ID {}
-   | ID '[' NUMCONST ']' {}
+varDeclId : ID { cout << "I'm a node.\n"; }
+   | ID '[' NUMCONST ']' { cout << "I'm a node.\n"; }
    ;
 
-parms : parmList {}
-   | /* empty */ {}
+parms : parmList { cout << "I'm a node.\n"; }
+   | /* empty */ { cout << "I'm a node.\n"; }
    ;
 
-parmList : parmList ';' parmTypeList {}
-   | parmTypeList {}
+parmList : parmList ';' parmTypeList { cout << "I'm a node.\n"; }
+   | parmTypeList { cout << "I'm a node.\n"; }
    ;
 
-parmTypeList : typeSpec parmIdList {}
+parmTypeList : typeSpec parmIdList { cout << "I'm a node.\n"; }
    ;
 
-compoundstmt : '{' localDecls stmtList '}' {$$ = newStmtNode(StmtKind::CompoundK, $1, $2, $3);}
+compoundstmt : '{' localDecls stmtList '}' { cout << "I'm a node.\n"; }//$$ = newStmtNode(StmtKind::CompoundK, $1, $2, $3);}
    ;
 
-matched : IF simpleExp THEN matched ELSE matched {}
-   | WHILE simpleExp DO matched {}
-   | FOR ID '=' iterRange DO matched {}
-   | expstmt {}
+matched : IF simpleExp THEN matched ELSE matched { cout << "I'm a node.\n"; }
+   | WHILE simpleExp DO matched { cout << "I'm a node.\n"; }
+   | FOR ID '=' iterRange DO matched { cout << "I'm a node.\n"; }
+   | expstmt { cout << "I'm a node.\n"; }
    | compoundstmt {$$ = $1;}
-   | returnstmt {}
-   | breakstmt {}
+   | returnstmt { cout << "I'm a node.\n"; }
+   | breakstmt { cout << "I'm a node.\n"; }
    ;
 
-iterRange : simpleExp TO simpleExp {}
-   | simpleExp TO simpleExp BY simpleExp {}
+iterRange : simpleExp TO simpleExp { cout << "I'm a node.\n"; }
+   | simpleExp TO simpleExp BY simpleExp { cout << "I'm a node.\n"; }
    ;
 
-unmatched : IF simpleExp THEN stmt {}
-   | IF simpleExp THEN matched ELSE unmatched {}
-   | WHILE simpleExp DO unmatched {}
-   | FOR ID '=' iterRange DO unmatched {}
+unmatched : IF simpleExp THEN stmt { cout << "I'm a node.\n"; }
+   | IF simpleExp THEN matched ELSE unmatched { cout << "I'm a node.\n"; }
+   | WHILE simpleExp DO unmatched { cout << "I'm a node.\n"; }
+   | FOR ID '=' iterRange DO unmatched { cout << "I'm a node.\n"; }
    ;
 
-localDecls : localDecls scopedVarDecl {}
-   | /* empty */ {}
+localDecls : localDecls scopedVarDecl { cout << "I'm a node.\n"; }
+   | /* empty */ { cout << "I'm a node.\n"; }
    ;
 
-stmtList : stmtList stmt {}
-   | /* empty*/ {}
+stmtList : stmtList stmt { cout << "I'm a node.\n"; }
+   | /* empty*/ { cout << "I'm a node.\n"; }
    ;
 
-returnstmt : RETURN ';' {}
-   | RETURN exp ';' {}
+returnstmt : RETURN ';' { cout << "I'm a node.\n"; }
+   | RETURN exp ';' { cout << "I'm a node.\n"; }
    ;
 
-scopedVarDecl : STATIC typeSpec varDeclList ';' {}
-   | typeSpec varDeclList ';' {}
+scopedVarDecl : STATIC typeSpec varDeclList ';' { cout << "I'm a node.\n"; }
+   | typeSpec varDeclList ';' { cout << "I'm a node.\n"; }
    ;
 
-stmt : matched {}
-   | unmatched {}
+stmt : matched { cout << "I'm a node.\n"; }
+   | unmatched { cout << "I'm a node.\n"; }
    ;
 
-parmId : ID {}
-   | ID '[' ']' {}
+parmId : ID { cout << "I'm a node.\n"; }
+   | ID '[' ']' { cout << "I'm a node.\n"; }
    ;
 
-parmIdList : parmIdList ',' parmId {}
-   | parmTypeList {}
+parmIdList : parmIdList ',' parmId { cout << "I'm a node.\n"; }
+   | parmTypeList { cout << "I'm a node.\n"; }
    ;
 
-typeSpec : INT {$$ = ExpType::Integer;}
-   | BOOL {}
-   | CHAR {}
+typeSpec : INT { cout << "I'm a node.\n"; } //$$ = ExpType::Integer;}
+   | BOOL { cout << "I'm a node.\n"; }
+   | CHAR { cout << "I'm a node.\n"; }
    ;
 
-funDecl : typeSpec ID '(' parms ')' stmt {}
-   | ID '(' parms ')' stmt {}//$$ = newDeclNode(DeclKind::FuncK, );}
+funDecl : typeSpec ID '(' parms ')' stmt { cout << "I'm a node.\n"; }
+   | ID '(' parms ')' stmt { cout << "I'm a node.\n"; }//$$ = newDeclNode(DeclKind::FuncK, );}
    ;
 
-breakstmt : BREAK {}
+breakstmt : BREAK { cout << "I'm a node.\n"; }
    ;
 
-expstmt : exp {}
+expstmt : exp { cout << "I'm a node.\n"; }
    ;
 
-exp : mutable assignop exp {}
-   | mutable INC {}
-   | mutable DEC {}
-   | simpleExp {}
-   | mutable assignop ERROR {}
+exp : mutable assignop exp { cout << "I'm a node.\n"; }
+   | mutable INC { cout << "I'm a node.\n"; }
+   | mutable DEC { cout << "I'm a node.\n"; }
+   | simpleExp { cout << "I'm a node.\n"; }
+   | mutable assignop ERROR { cout << "I'm a node.\n"; }
    ;
 
-assignop : ADDASS {}
-   | SUBASS {}
-   | MULASS {}
-   | DIVASS {}
+assignop : ADDASS { cout << "I'm a node.\n"; }
+   | SUBASS { cout << "I'm a node.\n"; }
+   | MULASS { cout << "I'm a node.\n"; }
+   | DIVASS { cout << "I'm a node.\n"; }
    ;
 
-simpleExp : simpleExp OR andExp {}
-   | andExp {}
+simpleExp : simpleExp OR andExp { cout << "I'm a node.\n"; }
+   | andExp { cout << "I'm a node.\n"; }
    ;
 
-andExp : andExp AND unaryRelExp {}
-   | unaryRelExp {}
+andExp : andExp AND unaryRelExp { cout << "I'm a node.\n"; }
+   | unaryRelExp { cout << "I'm a node.\n"; }
    ;
 
-unaryRelExp : NOT unaryRelExp {}
-   | relExp {}
+unaryRelExp : NOT unaryRelExp { cout << "I'm a node.\n"; }
+   | relExp { cout << "I'm a node.\n"; }
    ;
 
-relExp : minmaxExp relop minmaxExp {}
-   | minmaxExp {}
+relExp : minmaxExp relop minmaxExp { cout << "I'm a node.\n"; }
+   | minmaxExp { cout << "I'm a node.\n"; }
    ;
 
-relop : LEQ {}
-   | '<' {}
-   | '>' {}
-   | GEQ {}
-   | EQ {}
-   | NEQ {}
+relop : LEQ { cout << "I'm a node.\n"; }
+   | '<' { cout << "I'm a node.\n"; }
+   | '>' { cout << "I'm a node.\n"; }
+   | GEQ { cout << "I'm a node.\n"; }
+   | EQ { cout << "I'm a node.\n"; }
+   | NEQ { cout << "I'm a node.\n"; }
    ;
 
-minmaxExp : minmaxExp minmaxop sumExp {}
-   | sumExp {}
+minmaxExp : minmaxExp minmaxop sumExp { cout << "I'm a node.\n"; }
+   | sumExp { cout << "I'm a node.\n"; }
    ;
 
-minmaxop : ":>:" {}
-   | ":<:" {}
+minmaxop : ":>:" { cout << "I'm a node.\n"; }
+   | ":<:" { cout << "I'm a node.\n"; }
    ;
 
-sumExp : sumExp sumop mulExp {}
-   | mulExp {}
+sumExp : sumExp sumop mulExp { cout << "I'm a node.\n"; }
+   | mulExp { cout << "I'm a node.\n"; }
    ;
 
-sumop : '+' {}
-   | '-' {}
+sumop : '+' { cout << "I'm a node.\n"; }
+   | '-' { cout << "I'm a node.\n"; }
    ;
 
-mulExp : mulExp mulop unaryExp {}
-   | unaryExp {}
+mulExp : mulExp mulop unaryExp { cout << "I'm a node.\n"; }
+   | unaryExp { cout << "I'm a node.\n"; }
    ;
 
-mulop : '*' {}
-   | '/' {}
-   | '%' {}
+mulop : '*' { cout << "I'm a node.\n"; }
+   | '/' { cout << "I'm a node.\n"; }
+   | '%' { cout << "I'm a node.\n"; }
    ;
 
-unaryExp : unaryop unaryExp {}
-   | factor {}
+unaryExp : unaryop unaryExp { cout << "I'm a node.\n"; }
+   | factor { cout << "I'm a node.\n"; }
    ;
 
-unaryop : '-' {}
-   | '*' {}
-   | '?' {}
+unaryop : '-' { cout << "I'm a node.\n"; }
+   | '*' { cout << "I'm a node.\n"; }
+   | '?' { cout << "I'm a node.\n"; }
    ;
 
-factor : immutable {}
-   | mutable {}
+factor : immutable { cout << "I'm a node.\n"; }
+   | mutable { cout << "I'm a node.\n"; }
    ;
 
-mutable : ID {}
-   | ID '[' exp ']' {}
+mutable : ID { cout << "I'm a node.\n"; }
+   | ID '[' exp ']' { cout << "I'm a node.\n"; }
    ;
 
-immutable : '(' exp ')' {}
-   | call {}
-   | constant {}
+immutable : '(' exp ')' { cout << "I'm a node.\n"; }
+   | call { cout << "I'm a node.\n"; }
+   | constant { cout << "I'm a node.\n"; }
    ;
 
-call : ID '(' args ')' {}
+call : ID '(' args ')' { cout << "I'm a node.\n"; }
    ;
 
-args : argList {}
-   | /* empty */ {}
+args : argList { cout << "I'm a node.\n"; }
+   | /* empty */ { cout << "I'm a node.\n"; }
    ;
 
-argList : argList ',' exp {}
-   | exp {}
+argList : argList ',' exp { cout << "I'm a node.\n"; }
+   | exp { cout << "I'm a node.\n"; }
    ;
 
-constant : NUMCONST {}
-   | CHARCONST {}
-   | STRINGCONST {}
-   | BOOLCONST {}
+constant : NUMCONST { cout << "I'm a node.\n"; }
+   | CHARCONST { cout << "I'm a node.\n"; }
+   | STRINGCONST { cout << "I'm a node.\n"; }
+   | BOOLCONST { cout << "I'm a node.\n"; }
    ;
 
 /*
