@@ -186,12 +186,45 @@ char *expTypeToStr(ExpType type, bool isArray, bool isStatic)
 
 void printTreeNode(FILE *out, TreeNode *syntaxTree, bool showExpType, bool showAllocation)
 {
-    // do something here
+    fprintf(out, "Hey I'm a node, say something here.\n");
+
     return;
 }
 
 void printTree(FILE *out, TreeNode *syntaxTree, bool showExpType, bool showAllocation)
 {
-    // do something here
+    if(syntaxTree == nullptr)
+    {
+        fprintf(out, "NULL\n");
+    }
+
+    printTreeRecursive(out, syntaxTree, showExpType, showAllocation, 0);
     return;
+}
+
+void printTreeRecursive(FILE *out, TreeNode *syntaxTree, bool showExpType, bool showAllocation, int depth, int siblingCount)
+{
+    // check if null
+    if(syntaxTree == nullptr) return;
+
+    // current node
+    printTreeNode(out, syntaxTree, showExpType, showAllocation);
+    fprintf(out, "\n");
+
+    // recursively search each child
+    for(int i=0; i<MAXCHILDREN; i++)
+    {
+        if(syntaxTree->child[i] != nullptr)
+        {
+            fprintf(out, "Child: %d  ", i);
+            printTreeRecursive(out, syntaxTree->child[i], showExpType, showAllocation, depth+1);
+        }
+    }
+
+    TreeNode *sibling = syntaxTree->sibling;
+    if(sibling != nullptr)
+    {
+        fprintf(out, "Sibling: %d  ", siblingCount);
+        printTreeRecursive(out, sibling, showExpType, showAllocation, depth, siblingCount+1);
+    }
 }
