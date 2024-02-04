@@ -67,10 +67,13 @@ TreeNode *syntaxTree;
 %type    <tree>   parmIdList parmId stmt matched iterRange unmatched expstmt
 %type    <tree>   compoundstmt localDecls stmtList returnstmt breakstmt
 %type    <tree>   precomList declList decl varDecl funDecl varDeclList
-%type    <tree>   program typeSpec parms varDeclId
+%type    <tree>   program parms varDeclId
+
+%type    <type>   typeSpec
 
 // token data
 %token   <tinfo>  OP
+%token   <tinfo>  '(' ')' ',' ';' '[' '{' '}' ']' ':'
 %token   <tinfo>  NEQ LEQ GEQ
 %token   <tinfo>  MAX MIN
 %token   <tinfo>  INC DEC
@@ -87,19 +90,19 @@ TreeNode *syntaxTree;
 %token   <tinfo>  RETURN BREAK
 %token   <tinfo>  SUBASS ADDASS MULASS DIVASS
 %token   <tinfo>  EQ
-%token   <tinfo>  FIRSTSTOP LASTSTOP
+%token   <tinfo>  FIRSTSTOP LASTSTOP LASTTERM
 
 
 %%
-program : precomList declList                {cout << yylval.tinfo->tokenstr << " precom declList\n"; syntaxTree = $2;}
+program : precomList declList                {cout << yylval.tinfo->tokenstr << " precom declList\n";} // syntaxTree = $2;}
    ;
 
 precomList : precomList PRECOMPILER          { cout << yylval.tinfo->tokenstr << " precom list\n"; $$ = nullptr; }
    | PRECOMPILER                             { cout << yylval.tinfo->tokenstr << " precom \n"; $$ = nullptr; }
    ;
 
-declList : declList decl                     {cout << yylval.tinfo->tokenstr << "declList \n"; $$ = addSibling($1, $2);}
-   | decl                                    {cout << yylval.tinfo->tokenstr << " decl \n"; $$ = $1;}
+declList : declList decl                     {cout << yylval.tinfo->tokenstr << "declList \n";} // $$ = addSibling($1, $2);}
+   | decl                                    {cout << yylval.tinfo->tokenstr << " decl \n";} // $$ = $1;}
    ;
 
 decl : varDecl                               {$$ = $1; cout << yylval.tinfo->tokenstr << " vardecl \n"; }
