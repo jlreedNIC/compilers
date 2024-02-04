@@ -228,7 +228,7 @@ void printTreeRecursive(FILE *out, TreeNode *syntaxTree, bool showExpType, bool 
     {
         fprintf(out, "in loop %i\n", i);
 
-        if(syntaxTree->child[i] != NULL)
+        if(syntaxTree->child[i] != nullptr)
         {
             fprintf(out, "child not null\n");
             fprintf(out, "Child: %i  ", i);
