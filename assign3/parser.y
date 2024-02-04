@@ -26,8 +26,8 @@ TreeNode *addSibling(TreeNode *t, TreeNode *s)
    }
 
    TreeNode *ptr = new TreeNode;
-   ptr = t->sibling;
-   while(ptr != nullptr)
+   ptr = t;
+   while(ptr->sibling != nullptr)
    {
       ptr = ptr->sibling;
    }
@@ -49,12 +49,13 @@ void setType(TreeNode *t, ExpType type, bool isStatic)
       t = t->sibling;
    }
 }
+
 // the syntax tree goes here
 TreeNode *syntaxTree;
 
 extern "C" int yylex();
-//extern "C" int yyparse();
-//extern "C" FILE *yyin;
+extern "C" int yyparse();
+extern "C" FILE *yyin;
 
 void yyerror(const char *msg);
 
@@ -75,7 +76,6 @@ void printToken(TokenData myData, string tokenName, int type = 0) {
 %union
 {
    struct   TokenData *tinfo;
-//   TokenData *tokenData;
    struct   TreeNode *tree;
    ExpType  type;
 }
@@ -84,7 +84,7 @@ void printToken(TokenData myData, string tokenName, int type = 0) {
 %type    <tree>   parmIdList parmId stmt matched iterRange unmatched expstmt
 %type    <tree>   compoundstmt localDecls stmtList returnstmt breakstmt
 %type    <tree>   precomList declList decl varDecl funDecl varDeclList
-%type    <tree>   program typeSpec
+%type    <tree>   program typeSpec parms varDeclId
 
 // token data
 %token   <tinfo>  OP
@@ -105,43 +105,41 @@ void printToken(TokenData myData, string tokenName, int type = 0) {
 %token   <tinfo>  SUBASS ADDASS MULASS DIVASS
 %token   <tinfo>  EQ
 %token   <tinfo>  FIRSTSTOP LASTSTOP
-//%type    <tinfo>  term program
 
-//%type   <tree>  program compoundstmt
 
 %%
-program : precomList declList {syntaxTree = $2;}
+program : precomList declList               {cout << yylval.tinfo->tokenstr << " precom declList\n"; syntaxTree = $2;}
    ;
 
-precomList : precomList PRECOMPILER { cout << "I'm a node.\n"; $$ = nullptr; }
-   | PRECOMPILER { cout << "I'm a node.\n"; $$ = nullptr; }
+precomList : precomList PRECOMPILER         { cout << yylval.tinfo->tokenstr << " precom list\n"; $$ = nullptr; }
+   | PRECOMPILER                            { cout << yylval.tinfo->tokenstr << " precom \n"; $$ = nullptr; }
    ;
 
-declList : declList decl {$$ = addSibling($1, $2);}
-   | decl {$$ = $1;}
+declList : declList decl                    {cout << yylval.tinfo->tokenstr << "declList \n"; $$ = addSibling($1, $2);}
+   | decl                                   {cout << yylval.tinfo->tokenstr << " decl \n"; $$ = $1;}
    ;
 
-decl : varDecl {$$ = $1;}
-   | funDecl {$$ = $1;}
+decl : varDecl                              {$$ = $1; cout << yylval.tinfo->tokenstr << " vardecl \n"; }
+   | funDecl                                {$$ = $1; cout << yylval.tinfo->tokenstr << " fundecl \n"; }
    ;
 
-varDecl : typeSpec varDeclList ';' { cout << "I'm a node.\n"; $$ = addSibling($1, $2); }
+varDecl : typeSpec varDeclList ';'          { cout <<  yylval.tinfo->tokenstr << " varDeclList \n"; } //$$ = $2;}// setType($2, $1, false); }
    ;
 
-varDeclList : varDeclList ',' varDeclInit { cout << "I'm a node.\n"; }
-   | varDeclInit { cout << "I'm a node.\n"; }
+varDeclList : varDeclList ',' varDeclInit   { cout <<  yylval.tinfo->tokenstr << " varDeclInit list \n"; }
+   | varDeclInit                            { cout <<  yylval.tinfo->tokenstr << " varDeclInit \n"; }
    ;
 
-varDeclInit : varDeclId { cout << "I'm a node.\n"; }
-   | varDeclId ':' simpleExp { cout << "I'm a node.\n"; }
+varDeclInit : varDeclId                     { cout << "I'm a node.\n"; }
+   | varDeclId ':' simpleExp                { cout << "I'm a node.\n"; }
    ;
 
-varDeclId : ID { cout << "I'm a node.\n"; }
-   | ID '[' NUMCONST ']' { cout << "I'm a node.\n"; }
+varDeclId : ID                              { cout << yylval.tinfo->tokenstr << " decl id \n"; $$ = newDeclNode(DeclKind::VarK, UndefinedType, $1);}
+   | ID '[' NUMCONST ']'                    { cout << yylval.tinfo->tokenstr << " decl id array\n"; $$ = newDeclNode(DeclKind::VarK, UndefinedType, $1);}
    ;
 
-parms : parmList { cout << "I'm a node.\n"; }
-   | /* empty */ { cout << "I'm a node.\n"; }
+parms : parmList                            { cout << "I'm a node.\n"; }
+   | /* empty */                            { cout << yylval.tinfo->tokenstr << " empty parmlist \n"; $$ = nullptr;}
    ;
 
 parmList : parmList ';' parmTypeList { cout << "I'm a node.\n"; }
@@ -158,7 +156,7 @@ matched : IF simpleExp THEN matched ELSE matched { cout << "I'm a node.\n"; }
    | WHILE simpleExp DO matched { cout << "I'm a node.\n"; }
    | FOR ID '=' iterRange DO matched { cout << "I'm a node.\n"; }
    | expstmt { cout << "I'm a node.\n"; }
-   | compoundstmt {$$ = $1;}
+   | compoundstmt {}//$$ = $1;}
    | returnstmt { cout << "I'm a node.\n"; }
    | breakstmt { cout << "I'm a node.\n"; }
    ;
