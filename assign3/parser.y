@@ -125,8 +125,8 @@ varDeclInit : varDeclId                      { $$ = $1;}
    | varDeclId ':' simpleExp                 { $$ = addSibling($1, $3);}
    ;
 
-varDeclId : ID                               { $$ = newDeclNode(DeclKind::VarK, UndefinedType, $1);}
-   | ID '[' NUMCONST ']'                     { $$ = newDeclNode(DeclKind::VarK, UndefinedType, $1);}
+varDeclId : ID                               { $$ = newDeclNode(DeclKind::VarK, UndefinedType, $1); $$->isArray = false;}
+   | ID '[' NUMCONST ']'                     { $$ = newDeclNode(DeclKind::VarK, UndefinedType, $1); $$->isArray = true;}
    ;
 
 parms : parmList                             { $$ = $1;}
@@ -195,7 +195,7 @@ typeSpec : INT                               {  $$ = ExpType::Integer;}
    | CHAR                                    {  $$ = ExpType::Char;}
    ;
 
-funDecl : typeSpec ID '(' parms ')' stmt     { $$ = newDeclNode(DeclKind::FuncK, $1, $3, $4, $6);}
+funDecl : typeSpec ID '(' parms ')' stmt     { $$ = newDeclNode(DeclKind::FuncK, $1, $2, $4, $6);}
    | ID '(' parms ')' stmt                   { $$ = newDeclNode(DeclKind::FuncK, UndefinedType, $1, $3, $5);}
    ;
 
