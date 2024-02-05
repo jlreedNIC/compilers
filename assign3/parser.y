@@ -452,6 +452,9 @@ int main(int argc, char **argv)
       printf("Errors: %d\n", numErrors);
       printf("-----------\n");
    }
+
+   printf("Number of warnings: %d\n", numWarnings);
+   printf("Number of errors: %d\n", numErrors);
    return 0;
 }
 

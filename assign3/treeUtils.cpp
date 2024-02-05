@@ -48,7 +48,7 @@ TreeNode *newDeclNode(DeclKind kind,
                       TreeNode *c1,
                       TreeNode *c2)  // save TokenData block!!
 {
-//   std::cout << "newDeclNode created of type " << expTypeToStr(type) << "\n";
+//   std::cout << "newDeclNode created of " << expTypeToStr(type) << "\n";
     // did in class
     TreeNode *newNode = new TreeNode;
     newNode->nodekind = NodeKind::DeclK;
@@ -62,11 +62,13 @@ TreeNode *newDeclNode(DeclKind kind,
     newNode->nodeNum = nodeNumber++;
     newNode->lineno = token->linenum;
 
+    // std::cout << "starting token setting\n";
     // // setting token data??
-    // newNode->attr.op = OpKind(token->tokenclass);
+    newNode->attr.op = token->tokenclass;
     // newNode->attr.value = token->nvalue;
     // newNode->attr.cvalue = token->cvalue;
     newNode->attr.name = token->svalue;
+    // std::cout << token->tokenstr << " test \n";
     // newNode->attr.string = token->tokenstr;
 
     return newNode;

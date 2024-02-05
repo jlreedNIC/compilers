@@ -28,6 +28,11 @@ int setValue(int linenum, int tokenClass, char *svalue) {
     case NUMCONST:
          // yylval.tinfo->nvalue = hmmmm ..... I don't need this yet, but
          break;
+    case ID:
+         yylval.tinfo->svalue = strdup(svalue);
+        //  strcpy(yylval.tinfo->svalue, svalue);
+        //  cout << yylval.tinfo->svalue << "\n";
+         break;
 
 //     case OP:
 //          // yylval.tinfo->cvalue = hmmm..... What should I set it to?
