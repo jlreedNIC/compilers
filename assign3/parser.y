@@ -146,10 +146,10 @@ compoundstmt : '{' localDecls stmtList '}'   { $$ = newStmtNode(StmtKind::Compou
 matched : IF simpleExp THEN matched ELSE matched   { $$ = nullptr;}
    | WHILE simpleExp DO matched              { $$ = nullptr;}
    | FOR ID '=' iterRange DO matched         { $$ = nullptr;}
-   | expstmt                                 {  $$ = nullptr;}
-   | compoundstmt                            {$$ = $1;}
-   | returnstmt                              {  $$ = nullptr;}
-   | breakstmt                               {  $$ = nullptr;}
+   | expstmt                                 { $$ = $1;}
+   | compoundstmt                            { $$ = $1;}
+   | returnstmt                              { $$ = $1;}
+   | breakstmt                               { $$ = $1;}
    ;
 
 iterRange : simpleExp TO simpleExp           {  $$ = nullptr;}
@@ -178,8 +178,8 @@ scopedVarDecl : STATIC typeSpec varDeclList ';'    {  $$ = nullptr;}
    | typeSpec varDeclList ';'                {  $$ = nullptr;}
    ;
 
-stmt : matched                               {  $$ = nullptr;}
-   | unmatched                               {  $$ = nullptr;}
+stmt : matched                               {  $$ = $1;}
+   | unmatched                               {  $$ = $1;}
    ;
 
 parmId : ID                                  {  $$ = nullptr;}
@@ -195,7 +195,7 @@ typeSpec : INT                               {  $$ = ExpType::Integer;}
    | CHAR                                    {  $$ = ExpType::Char;}
    ;
 
-funDecl : typeSpec ID '(' parms ')' stmt     { $$ = newDeclNode(DeclKind::FuncK, $1, $2, $4, $6);}
+funDecl : typeSpec ID '(' parms ')' stmt     { $$ = newDeclNode(DeclKind::FuncK, $1, $3, $4, $6);}
    | ID '(' parms ')' stmt                   { $$ = newDeclNode(DeclKind::FuncK, UndefinedType, $1, $3, $5);}
    ;
 

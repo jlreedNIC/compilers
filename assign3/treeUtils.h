@@ -30,4 +30,6 @@ void printTreeNode(FILE *out, TreeNode *syntaxTree, bool showExpType, bool showA
 void printTree(FILE *out, TreeNode *syntaxTree, bool showExpType, bool showAllocation);
 void printTreeRecursive(FILE *out, TreeNode *syntaxTree, bool showExpType, bool showAllocation, int depth, int siblingCount = 1);
 
+void printDots(FILE *out, int depth);
+
 #endif

@@ -77,6 +77,7 @@ TreeNode *newStmtNode(StmtKind kind,
                       TreeNode *c1,
                       TreeNode *c2)
 {
+    //std::cout << "adding new stmtNode\n";
     // did in class
     TreeNode *newNode = new TreeNode;
     newNode->nodekind = NodeKind::StmtK;
@@ -88,26 +89,14 @@ TreeNode *newStmtNode(StmtKind kind,
 
     newNode->nodeNum = nodeNumber++;
 
-    return newNode;
-
-    // // below did at home
-    // TreeNode *newNode = new TreeNode;
-
-    // newNode->kind.stmt = kind;
-    // // newNode->type = type;
-
     // // setting token data??
-    // newNode->attr.op = token->tokenclass;
-    // newNode->attr.value = token->nvalue;
-    // newNode->attr.cvalue = token->cvalue;
-    // newNode->attr.name = token->svalue;
-    // newNode->attr.string = token->tokenstr;
+    newNode->attr.op = token->tokenclass;
+    newNode->attr.value = token->nvalue;
+    newNode->attr.cvalue = token->cvalue;
+    newNode->attr.name = token->svalue;
+    newNode->attr.string = token->tokenstr;
 
-    // newNode->child[0] = c0;
-    // newNode->child[1] = c1;
-    // newNode->child[2] = c2;
-
-    // return newNode;
+    return newNode;
 }
 
 TreeNode *newExpNode(ExpKind kind,
@@ -187,22 +176,30 @@ char *expTypeToStr(ExpType type, bool isArray, bool isStatic)
 
 void printTreeNode(FILE *out, TreeNode *syntaxTree, bool showExpType, bool showAllocation)
 {
-//    if(syntaxTree->nodekind == NodeKind::DeclK)
-//    {
-//        fprintf(out, "Hey I'm a declK node.\n");
-//    }
-//    else if(syntaxTree->nodekind == NodeKind::StmtK)
-//    {
-//        fprintf(out, "Hey I'm a stmtK node.\n");
-//    }
-//    else if(syntaxTree->nodekind == NodeKind::ExpK)
-//    {
-//        fprintf(out, "Hey I'm an expK node.\n");
-//    }
-//    else 
-    fprintf(out, "Hey I'm a node, say something here.\n");
+    if(syntaxTree->nodekind == NodeKind::DeclK)
+    {
+        fprintf(out, "Hey I'm a declK node.");
+    }
+    else if(syntaxTree->nodekind == NodeKind::StmtK)
+    {
+        fprintf(out, "Hey I'm a stmtK node.");
+    }
+    else if(syntaxTree->nodekind == NodeKind::ExpK)
+    {
+        fprintf(out, "Hey I'm an expK node.");
+    }
+    else 
+    fprintf(out, "Hey I'm a node, say something here.");
 
     return;
+}
+
+void printDots(FILE *out, int depth)
+{
+    for(int i=0; i<depth; i++)
+    {
+       fprintf(out, ".   ");
+    }
 }
 
 void printTree(FILE *out, TreeNode *syntaxTree, bool showExpType, bool showAllocation)
@@ -214,7 +211,7 @@ void printTree(FILE *out, TreeNode *syntaxTree, bool showExpType, bool showAlloc
         return;
     }
 
-    printTreeRecursive(out, syntaxTree, showExpType, showAllocation, 0);
+    printTreeRecursive(out, syntaxTree, showExpType, showAllocation, 1);
     return;
 }
 
@@ -227,26 +224,32 @@ void printTreeRecursive(FILE *out, TreeNode *syntaxTree, bool showExpType, bool 
         return;
     }
 
+    //for(int i=0; i<depth; i++)
+    //{
+      // fprintf(out, ".   ");
+    //}
+
     // current node
     printTreeNode(out, syntaxTree, showExpType, showAllocation);
     fprintf(out, "\n");
 
-//    fprintf(out, "starting recursive child search\n");
     // recursively search each child
     for(int i=0; i<MAXCHILDREN; i++)
     {
-//        fprintf(out, "in loop %i\n", i);
-
+        //fprintf(out, "searching child %d \n", i);
+        //for(int j=0; j<depth; j++)
+        //{
+        //    fprintf(out, ".   ");
+        //}
         if(syntaxTree->child[i] != nullptr)
         {
-//            fprintf(out, "child not null\n");
+            printDots(out, depth);
+
             fprintf(out, "Child: %i  ", i);
             printTreeRecursive(out, syntaxTree->child[i], showExpType, showAllocation, depth+1);
         }
-//        fprintf(out, "child[%i] was null\n");
     }
 
-//    fprintf(out, "looking at sibling\n");
     TreeNode *sibling = syntaxTree->sibling;
     if(sibling != NULL)
     {
