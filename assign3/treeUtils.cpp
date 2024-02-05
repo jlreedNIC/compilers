@@ -1,7 +1,10 @@
 #include "treeUtils.h"
 
+static int nodeNumber = 0;
+
 TreeNode *cloneNode(TreeNode *currnode)
 {
+//   std::cout << "in cloneNode func\n";
     TreeNode *newNode = new TreeNode;
 
     // newNode->child = currnode->child;
@@ -10,7 +13,7 @@ TreeNode *cloneNode(TreeNode *currnode)
         newNode->child[i] = currnode->child[i];
     }
     newNode->sibling = currnode->sibling;
-    newNode->nodeNum = currnode->nodeNum;
+    newNode->nodeNum = nodeNumber++;
 
     newNode->lineno = currnode->lineno;
     newNode->nodekind = currnode->nodekind;
@@ -45,7 +48,7 @@ TreeNode *newDeclNode(DeclKind kind,
                       TreeNode *c1,
                       TreeNode *c2)  // save TokenData block!!
 {
-
+  // std::cout << "newDeclNode created\n";
     // did in class
     TreeNode *newNode = new TreeNode;
     newNode->nodekind = NodeKind::DeclK;
@@ -56,6 +59,7 @@ TreeNode *newDeclNode(DeclKind kind,
     newNode->sibling = NULL;
 
     newNode->type = type;
+    newNode->nodeNum = nodeNumber++;
 
     // // setting token data??
     newNode->attr.op = token->tokenclass;
@@ -81,6 +85,8 @@ TreeNode *newStmtNode(StmtKind kind,
     newNode->child[1] = c1;
     newNode->child[2] = c2;
     newNode->sibling = NULL;
+
+    newNode->nodeNum = nodeNumber++;
 
     return newNode;
 
@@ -118,6 +124,8 @@ TreeNode *newExpNode(ExpKind kind,
     newNode->child[1] = c1;
     newNode->child[2] = c2;
     newNode->sibling = NULL;
+
+    newNode->nodeNum = nodeNumber++;
 
     return newNode;
 
@@ -199,6 +207,7 @@ void printTreeNode(FILE *out, TreeNode *syntaxTree, bool showExpType, bool showA
 
 void printTree(FILE *out, TreeNode *syntaxTree, bool showExpType, bool showAllocation)
 {
+//   fprintf(out, "printing tree\n");
     if(syntaxTree == nullptr)
     {
         fprintf(out, "NULL\n");
@@ -214,7 +223,7 @@ void printTreeRecursive(FILE *out, TreeNode *syntaxTree, bool showExpType, bool 
     // check if null
     if(syntaxTree == NULL) 
     {
-        fprintf(out, "node is null\n");
+//        fprintf(out, "node is null\n");
         return;
     }
 
@@ -222,22 +231,22 @@ void printTreeRecursive(FILE *out, TreeNode *syntaxTree, bool showExpType, bool 
     printTreeNode(out, syntaxTree, showExpType, showAllocation);
     fprintf(out, "\n");
 
-    fprintf(out, "starting recursive child search\n");
+//    fprintf(out, "starting recursive child search\n");
     // recursively search each child
     for(int i=0; i<MAXCHILDREN; i++)
     {
-        fprintf(out, "in loop %i\n", i);
+//        fprintf(out, "in loop %i\n", i);
 
         if(syntaxTree->child[i] != nullptr)
         {
-            fprintf(out, "child not null\n");
+//            fprintf(out, "child not null\n");
             fprintf(out, "Child: %i  ", i);
             printTreeRecursive(out, syntaxTree->child[i], showExpType, showAllocation, depth+1);
         }
-        fprintf(out, "child[%i] was null\n");
+//        fprintf(out, "child[%i] was null\n");
     }
 
-    fprintf(out, "looking at sibling\n");
+//    fprintf(out, "looking at sibling\n");
     TreeNode *sibling = syntaxTree->sibling;
     if(sibling != NULL)
     {

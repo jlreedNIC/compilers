@@ -2,6 +2,7 @@
 #define _UTIL_H_
 #include "treeNodes.h"
 #include "scanType.h"
+#include <iostream>
 #include <string.h>
 
 // lots of these save the TokenData block so line number and yytext are saved
