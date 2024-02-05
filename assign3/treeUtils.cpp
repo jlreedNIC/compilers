@@ -48,7 +48,7 @@ TreeNode *newDeclNode(DeclKind kind,
                       TreeNode *c1,
                       TreeNode *c2)  // save TokenData block!!
 {
-  // std::cout << "newDeclNode created\n";
+//   std::cout << "newDeclNode created of type " << expTypeToStr(type) << "\n";
     // did in class
     TreeNode *newNode = new TreeNode;
     newNode->nodekind = NodeKind::DeclK;
@@ -63,11 +63,11 @@ TreeNode *newDeclNode(DeclKind kind,
     newNode->lineno = token->linenum;
 
     // // setting token data??
-    newNode->attr.op = OpKind(token->tokenclass);
-    newNode->attr.value = token->nvalue;
-    newNode->attr.cvalue = token->cvalue;
+    // newNode->attr.op = OpKind(token->tokenclass);
+    // newNode->attr.value = token->nvalue;
+    // newNode->attr.cvalue = token->cvalue;
     newNode->attr.name = token->svalue;
-    newNode->attr.string = token->tokenstr;
+    // newNode->attr.string = token->tokenstr;
 
     return newNode;
 }
@@ -163,16 +163,15 @@ char *expTypeToStr(ExpType type, bool isArray, bool isStatic)
 {
     char *str;
 
-    if (type == Void)
-        strcpy(str, "VOID");
-    else if (type == Integer)
-        strcpy(str, "INT");
-    else if (type == Boolean)
-        strcpy(str, "BOOL");
-    else if(type == Char)
-        strcpy(str, "CHAR");
-    else
-        strcpy(str, "UNDF");
+    if (type == ExpType::Void)
+        str = (char *)"type void";
+    else if (type == ExpType::Integer)
+        str = (char *)"type int";
+    else if (type == ExpType::Boolean)
+        str = (char *)"type bool";
+    else if (type == ExpType::Char)
+        str = (char *)"type char";
+    else str = (char *)"undefined";
 
     return str;
 }
@@ -184,17 +183,18 @@ void printTreeNode(FILE *out, TreeNode *syntaxTree, bool showExpType, bool showA
         switch(syntaxTree->kind.decl)
         {
             case DeclKind::VarK:
-                fprintf(out, "Var: %d", syntaxTree->lineno);
+                fprintf(out, "Var");
                 break;
             case DeclKind::FuncK:
-                fprintf(out, "Func: %d", syntaxTree->lineno);
-                fprintf(out, " %d", syntaxTree->attr.value);
+                fprintf(out, "Func:");
+                fprintf(out, " %s", syntaxTree->attr.name);
+                fprintf(out, " returns %s", expTypeToStr(syntaxTree->type));
                 break;
             case DeclKind::ParamK:
-                fprintf(out, "Parameter: %d", syntaxTree->lineno);
+                fprintf(out, "Parameter");
                 break;
             default:
-                fprintf(out, "Hey I'm a declK node.: %d", syntaxTree->lineno);
+                fprintf(out, "Hey I'm a declK node.");
                 break;
         }
     }
@@ -203,28 +203,28 @@ void printTreeNode(FILE *out, TreeNode *syntaxTree, bool showExpType, bool showA
         switch(syntaxTree->kind.stmt)
         {
             case StmtKind::IfK:
-                fprintf(out, "If: %d", syntaxTree->lineno);
+                fprintf(out, "If");
                 break;
             case StmtKind::WhileK:
-                fprintf(out, "While: %d", syntaxTree->lineno);
+                fprintf(out, "While");
                 break;
             case StmtKind::ForK:
-                fprintf(out, "For: %d", syntaxTree->lineno);
+                fprintf(out, "For");
                 break;
             case StmtKind::CompoundK:
-                fprintf(out, "Compound: %d", syntaxTree->lineno);
+                fprintf(out, "Compound");
                 break;
             case StmtKind::ReturnK:
-                fprintf(out, "Return: %d", syntaxTree->lineno);
+                fprintf(out, "Return");
                 break;
             case StmtKind::BreakK:
-                fprintf(out, "Break: %d", syntaxTree->lineno);
+                fprintf(out, "Break");
                 break;
             case StmtKind::RangeK:
-                fprintf(out, "Range: %d", syntaxTree->lineno);
+                fprintf(out, "Range");
                 break;
             default:
-                fprintf(out, "Hey I'm a stmtK node.: %d", syntaxTree->lineno);
+                fprintf(out, "Hey I'm a stmtK node.");
                 break;
         }
     }
@@ -233,28 +233,28 @@ void printTreeNode(FILE *out, TreeNode *syntaxTree, bool showExpType, bool showA
         switch(syntaxTree->kind.exp)
         {
             case ExpKind::AssignK:
-                fprintf(out, "Assign: %d", syntaxTree->lineno);
+                fprintf(out, "Assign");
                 break;
             case ExpKind::CallK:
-                fprintf(out, "Call: %d", syntaxTree->lineno);
+                fprintf(out, "Call");
                 break;
             case ExpKind::ConstantK:
-                fprintf(out, "Constant: %d", syntaxTree->lineno);
+                fprintf(out, "Constant");
                 break;
             case ExpKind::IdK:
                 fprintf(out, "ID: %s", syntaxTree->attr.name);
                 break;
             case ExpKind::OpK:
-                fprintf(out, "OP: %d", syntaxTree->lineno);
+                fprintf(out, "OP");
                 break;
             default:
-                fprintf(out, "Hey I'm a ExpK node.: %d", syntaxTree->lineno);
+                fprintf(out, "Hey I'm a ExpK node.");
                 break;
         }
     }
     else 
     fprintf(out, "Hey I'm a node, say something here.");
-    //fprintf(out, ": %d", syntaxTree->lineno);
+    fprintf(out, " [line: %d]", syntaxTree->lineno-1);
     return;
 }
 
