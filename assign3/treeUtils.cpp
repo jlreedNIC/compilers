@@ -178,15 +178,75 @@ void printTreeNode(FILE *out, TreeNode *syntaxTree, bool showExpType, bool showA
 {
     if(syntaxTree->nodekind == NodeKind::DeclK)
     {
-        fprintf(out, "Hey I'm a declK node.");
+        switch(syntaxTree->kind.decl)
+        {
+            case DeclKind::VarK:
+                fprintf(out, "Var");
+                break;
+            case DeclKind::FuncK:
+                fprintf(out, "Func");
+                break;
+            case DeclKind::ParamK:
+                fprintf(out, "Parameter");
+                break;
+            default:
+                fprintf(out, "Hey I'm a declK node.");
+                break;
+        }
     }
     else if(syntaxTree->nodekind == NodeKind::StmtK)
     {
-        fprintf(out, "Hey I'm a stmtK node.");
+        switch(syntaxTree->kind.stmt)
+        {
+            case StmtKind::IfK:
+                fprintf(out, "If");
+                break;
+            case StmtKind::WhileK:
+                fprintf(out, "While");
+                break;
+            case StmtKind::ForK:
+                fprintf(out, "For");
+                break;
+            case StmtKind::CompoundK:
+                fprintf(out, "Compound");
+                break;
+            case StmtKind::ReturnK:
+                fprintf(out, "Return");
+                break;
+            case StmtKind::BreakK:
+                fprintf(out, "Break");
+                break;
+            case StmtKind::RangeK:
+                fprintf(out, "Range");
+                break;
+            default:
+                fprintf(out, "Hey I'm a stmtK node.");
+                break;
+        }
     }
     else if(syntaxTree->nodekind == NodeKind::ExpK)
     {
-        fprintf(out, "Hey I'm an expK node.");
+        switch(syntaxTree->kind.exp)
+        {
+            case ExpKind::AssignK:
+                fprintf(out, "Assign");
+                break;
+            case ExpKind::CallK:
+                fprintf(out, "Call");
+                break;
+            case ExpKind::ConstantK:
+                fprintf(out, "Constant");
+                break;
+            case ExpKind::IdK:
+                fprintf(out, "ID");
+                break;
+            case ExpKind::OpK:
+                fprintf(out, "OP");
+                break;
+            default:
+                fprintf(out, "Hey I'm a ExpK node.");
+                break;
+        }
     }
     else 
     fprintf(out, "Hey I'm a node, say something here.");
