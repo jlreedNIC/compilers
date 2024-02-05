@@ -140,6 +140,16 @@ parmList : parmList ';' parmTypeList         { $$ = addSibling($1, $3);}
 parmTypeList : typeSpec parmIdList           { $$ = $2; setType($2, $1, false);}
    ;
 
+parmIdList : parmIdList ',' parmId           {  $$ = addSibling($1, $3);}
+   | parmId                                  {  $$ = $1;}
+   ;
+
+parmId : ID                                  {  $$ = newDeclNode(DeclKind::ParamK, ExpType::UndefinedType, $1); 
+                                                $$->isArray = false; $$->isStatic = false;}
+   | ID '[' ']'                              {  $$ = newDeclNode(DeclKind::ParamK, ExpType::UndefinedType, $1); 
+                                                $$->isArray = true; $$->isStatic = false;}
+   ;
+
 compoundstmt : '{' localDecls stmtList '}'   { $$ = newStmtNode(StmtKind::CompoundK, $1, $2, $3);}
    ;
 
@@ -182,33 +192,25 @@ stmt : matched                               {  $$ = $1;}
    | unmatched                               {  $$ = $1;}
    ;
 
-parmId : ID                                  {  $$ = nullptr;}
-   | ID '[' ']'                              {  $$ = nullptr;}
-   ;
-
-parmIdList : parmIdList ',' parmId           {  $$ = nullptr;}
-   | parmTypeList                            {  $$ = nullptr;}
-   ;
-
 typeSpec : INT                               {  $$ = ExpType::Integer;}
    | BOOL                                    {  $$ = ExpType::Boolean;}
    | CHAR                                    {  $$ = ExpType::Char;}
    ;
 
 funDecl : typeSpec ID '(' parms ')' stmt     { $$ = newDeclNode(DeclKind::FuncK, $1, $2, $4, $6);}
-   | ID '(' parms ')' stmt                   { $$ = newDeclNode(DeclKind::FuncK, UndefinedType, $1, $3, $5);}
+   | ID '(' parms ')' stmt                   { $$ = newDeclNode(DeclKind::FuncK, ExpType::Void, $1, $3, $5);}
    ;
 
 breakstmt : BREAK                            {  $$ = nullptr;}
    ;
 
-expstmt : exp                                {  $$ = nullptr;}
+expstmt : exp                                {  $$ = $1;}
    ;
 
 exp : mutable assignop exp                   {  $$ = nullptr;}
    | mutable INC                             {  $$ = nullptr;}
    | mutable DEC                             {  $$ = nullptr;}
-   | simpleExp                               {  $$ = nullptr;}
+   | simpleExp                               {  $$ = $1;}
    | mutable assignop ERROR                  {  $$ = nullptr;}
    ;
 
@@ -219,11 +221,11 @@ assignop : ADDASS                            {  $$ = nullptr;}
    ;
 
 simpleExp : simpleExp OR andExp              {  $$ = nullptr;}
-   | andExp                                  {  $$ = nullptr;}
+   | andExp                                  {  $$ = $1;}
    ;
 
 andExp : andExp AND unaryRelExp              {  $$ = nullptr;}
-   | unaryRelExp                             {  $$ = nullptr;}
+   | unaryRelExp                             {  $$ = $1;}
    ;
 
 unaryRelExp : NOT unaryRelExp                {  $$ = nullptr;}
