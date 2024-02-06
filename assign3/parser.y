@@ -66,21 +66,23 @@ TreeNode *syntaxTree;
 }
 
 // tree data?
+%type    <tinfo>  sumop mulop relop assignop minmaxop unaryop
+
 %type    <tree>   parmIdList parmId stmt matched iterRange unmatched expstmt
 %type    <tree>   compoundstmt localDecls stmtList returnstmt breakstmt
 %type    <tree>   precomList declList decl varDecl funDecl varDeclList
-%type    <tree>   program parms varDeclId constant argList args  immutable mutable
-%type    <tree>   simpleExp sumop mulop mulExp relop assignop exp varDeclInit
-%type    <tree>   call factor unaryop unaryExp sumExp minmaxop minmaxExp relExp
+%type    <tree>   program parms varDeclId constant argList args  immutable
+%type    <tree>   simpleExp mulExp exp varDeclInit mutable
+%type    <tree>   call factor unaryExp sumExp minmaxExp relExp
 %type    <tree>   unaryRelExp andExp scopedVarDecl parmTypeList parmList
 
 %type    <type>   typeSpec
 
 // token data
-%token   <tinfo>  OP
+%token   <tinfo>  OP '=' '*' '+' '/' '%' '-'
 %token   <tinfo>  '(' ')' ',' ';' '[' '{' '}' ']' ':'
-%token   <tinfo>  NEQ LEQ GEQ
-%token   <tinfo>  MAX MIN
+%token   <tinfo>  NEQ LEQ GEQ EQ
+%token   <tinfo>  MAX MIN 
 %token   <tinfo>  INC DEC
 %token   <tinfo>  AND OR NOT
 %token   <tinfo>  PRECOMPILER
@@ -94,12 +96,11 @@ TreeNode *syntaxTree;
 %token   <tinfo>  STATIC
 %token   <tinfo>  RETURN BREAK
 %token   <tinfo>  SUBASS ADDASS MULASS DIVASS
-%token   <tinfo>  EQ
 %token   <tinfo>  FIRSTSTOP LASTSTOP LASTTERM
 
 
 %%
-program : precomList declList                { syntaxTree = $2;}// cout << syntaxTree->nodeNum << " num\n"; }
+program : precomList declList                { syntaxTree = $2;}
    ;
 
 precomList : precomList PRECOMPILER          { cout << yylval.tinfo->tokenstr << "\n"; $$ = nullptr; }
@@ -207,70 +208,71 @@ breakstmt : BREAK                            {  $$ = nullptr;}
 expstmt : exp                                {  $$ = $1;}
    ;
 
-exp : mutable assignop exp                   {  $$ = nullptr;}
+exp : mutable assignop exp                   { cout << "mutable: "; $$ = newExpNode(ExpKind::OpK, $2, $1, $3);}
    | mutable INC                             {  $$ = nullptr;}
    | mutable DEC                             {  $$ = nullptr;}
-   | simpleExp                               {  $$ = $1;}
-   | mutable assignop ERROR                  {  $$ = nullptr;}
+   | simpleExp                               { cout << "simpleExp: "; $$ = $1;}
+   | mutable assignop ERROR                  { cout << "mutable error "; $$ = nullptr;}
    ;
 
-assignop : ADDASS                            {  $$ = nullptr;}
-   | SUBASS                                  {  $$ = nullptr;}
-   | MULASS                                  {  $$ = nullptr;}
-   | DIVASS                                  {  $$ = nullptr;}
+assignop : '='                               { $$ = $1; }
+   | ADDASS                                  { $$ = $1;}
+   | SUBASS                                  { $$ = $1;}
+   | MULASS                                  { $$ = $1;}
+   | DIVASS                                  { $$ = $1;}
    ;
 
-simpleExp : simpleExp OR andExp              {  $$ = nullptr;}
-   | andExp                                  {  $$ = $1;}
+simpleExp : simpleExp OR andExp              { cout << "simpleexp new node\n"; $$ = newExpNode(ExpKind::OpK, $2, $1, $3);}
+   | andExp                                  { cout << "simpleexp and "; $$ = $1;}
    ;
 
-andExp : andExp AND unaryRelExp              {  $$ = nullptr;}
-   | unaryRelExp                             {  $$ = $1;}
+andExp : andExp AND unaryRelExp              { cout << "and op "; $$ = newExpNode(ExpKind::OpK, $2, $1, $3);}
+   | unaryRelExp                             { cout << "and unary "; $$ = $1;}
    ;
 
-unaryRelExp : NOT unaryRelExp                {  $$ = nullptr;}
-   | relExp                                  {  $$ = nullptr;}
+unaryRelExp : NOT unaryRelExp                { cout << "not unary exp "; $$ = nullptr;}
+   | relExp                                  { cout << "rel exp "; $$ = $1;}
    ;
 
-relExp : minmaxExp relop minmaxExp           {  $$ = nullptr;}
-   | minmaxExp                               {  $$ = nullptr;}
+relExp : minmaxExp relop minmaxExp           {  $$ = newExpNode(ExpKind::OpK, $2, $1, $3);}
+   | minmaxExp                               { cout << "minmax exp "; $$ = $1;}
    ;
 
 relop : LEQ                                  {  $$ = nullptr;}
    | '<'                                     {  $$ = nullptr;}
    | '>'                                     {  $$ = nullptr;}
    | GEQ                                     {  $$ = nullptr;}
-   | EQ                                      {  $$ = nullptr;}
+   | EQ                                      {  $$ = nullptr;} 
    | NEQ                                     {  $$ = nullptr;}
    ;
 
-minmaxExp : minmaxExp minmaxop sumExp        {  $$ = nullptr;}
-   | sumExp                                  {  $$ = nullptr;}
+minmaxExp : minmaxExp minmaxop sumExp        {  $$ = newExpNode(ExpKind::OpK, $2, $1, $3);}
+   | sumExp                                  { cout << "sum exp "; $$ = $1;}
    ;
 
-minmaxop : ":>:"                             {  $$ = nullptr;}
-   | ":<:"                                   {  $$ = nullptr;}
+minmaxop : MAX                               {  $$ = $1;}
+   | MIN                                     {  $$ = $1;}
    ;
 
-sumExp : sumExp sumop mulExp                 {  $$ = nullptr;}
-   | mulExp                                  {  $$ = nullptr;}
+sumExp : sumExp sumop mulExp                 {  $$ = newExpNode(ExpKind::OpK, $2, $1, $3);}
+   | mulExp                                  { cout << "muloexp "; $$ = $1;}
    ;
 
-sumop : '+'                                  {  $$ = nullptr;}
-   | '-'                                     {  $$ = nullptr;}
+sumop : '+'                                  {  $$ = $1;}
+   | '-'                                     {  $$ = $1;}
    ;
 
-mulExp : mulExp mulop unaryExp               {  $$ = nullptr;}
-   | unaryExp                                {  $$ = nullptr;}
+mulExp : mulExp mulop unaryExp               {  $$ = newExpNode(ExpKind::OpK, $2, $1, $3);}
+   | unaryExp                                { cout << "unaryexp "; $$ = $1;}
    ;
 
-mulop : '*'                                  {  $$ = nullptr;}
-   | '/'                                     {  $$ = nullptr;}
-   | '%'                                     {  $$ = nullptr;}
+mulop : '*'                                  {  $$ = $1;}
+   | '/'                                     {  $$ = $1;}
+   | '%'                                     {  $$ = $1;}
    ;
 
 unaryExp : unaryop unaryExp                  {  $$ = nullptr;}
-   | factor                                  {  $$ = nullptr;}
+   | factor                                  { cout << "factor- "; $$ = $1;}
    ;
 
 unaryop : '-'                                {  $$ = nullptr;}
@@ -278,17 +280,17 @@ unaryop : '-'                                {  $$ = nullptr;}
    | '?'                                     {  $$ = nullptr;}
    ;
 
-factor : immutable                           {  $$ = nullptr;}
-   | mutable                                 {  $$ = nullptr;}
+factor : immutable                           { cout << "immutable- "; $$ = $1;}
+   | mutable                                 { cout << "mutable- "; $$ = $1;}
    ;
 
-mutable : ID                                 {  $$ = nullptr;}
-   | ID '[' exp ']'                          {  $$ = nullptr;}
+mutable : ID                                 { $$ = newExpNode(ExpKind::IdK, $1); $$->isArray = false;}
+   | ID '[' exp ']'                          {  $$ = newExpNode(ExpKind::IdK, $1, $3);  $$->isArray = true;}
    ;
 
-immutable : '(' exp ')'                      {  $$ = nullptr;}
-   | call                                    {  $$ = nullptr;}
-   | constant                                {  $$ = nullptr;}
+immutable : '(' exp ')'                      {  $$ = $2;}
+   | call                                    {  $$ = $1;}
+   | constant                                { cout << "constant- "; $$ = $1;}
    ;
 
 call : ID '(' args ')'                       {  $$ = nullptr;}
@@ -302,10 +304,10 @@ argList : argList ',' exp                    {  $$ = nullptr;}
    | exp                                     {  $$ = nullptr;}
    ;
 
-constant : NUMCONST                          {  $$ = nullptr;}
-         | CHARCONST                         {  $$ = nullptr;}
-         | STRINGCONST                       {  $$ = nullptr;}
-         | BOOLCONST                         {  $$ = nullptr;}
+constant : NUMCONST                          { cout << "numconst- "; $$ = newExpNode(ExpKind::ConstantK, $1); $$->attr.value = $1->nvalue;}
+         | CHARCONST                         { cout << "charconst- "; $$ = newExpNode(ExpKind::ConstantK, $1);}
+         | STRINGCONST                       { cout << "stringconst- "; $$ = newExpNode(ExpKind::ConstantK, $1);}
+         | BOOLCONST                         { cout << "boolconst- "; $$ = newExpNode(ExpKind::ConstantK, $1);}
          ;
 
 /*

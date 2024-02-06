@@ -68,7 +68,7 @@ TreeNode *newDeclNode(DeclKind kind,
     // newNode->attr.value = token->nvalue;
     // newNode->attr.cvalue = token->cvalue;
     newNode->attr.name = token->svalue;
-    // std::cout << token->tokenstr << " test \n";
+    std::cout << token->tokenstr << " test \n";
     // newNode->attr.string = token->tokenstr;
 
     return newNode;
@@ -109,6 +109,7 @@ TreeNode *newExpNode(ExpKind kind,
                      TreeNode *c1,
                      TreeNode *c2)
 {
+    // std::cout << "new exp node\n";
     // did in class
     TreeNode *newNode = new TreeNode;
     newNode->nodekind = NodeKind::ExpK;
@@ -120,26 +121,13 @@ TreeNode *newExpNode(ExpKind kind,
 
     newNode->nodeNum = nodeNumber++;
     newNode->lineno = token->linenum;
+    newNode->attr.op = token->tokenclass;
+    newNode->attr.value = token->nvalue;
+    newNode->attr.cvalue = token->cvalue;
+    newNode->attr.name = token->svalue;
+    newNode->attr.string = token->tokenstr;
 
     return newNode;
-
-    // TreeNode *newNode = new TreeNode;
-
-    // newNode->kind.exp = kind;
-    // // newNode->type = type;
-
-    // // setting token data??
-    // newNode->attr.op = token->tokenclass;
-    // newNode->attr.value = token->nvalue;
-    // newNode->attr.cvalue = token->cvalue;
-    // newNode->attr.name = token->svalue;
-    // newNode->attr.string = token->tokenstr;
-
-    // newNode->child[0] = c0;
-    // newNode->child[1] = c1;
-    // newNode->child[2] = c2;
-
-    // return newNode;
 }
 
 // need to know what string should be returned
