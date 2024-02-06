@@ -68,7 +68,7 @@ TreeNode *newDeclNode(DeclKind kind,
     // newNode->attr.value = token->nvalue;
     // newNode->attr.cvalue = token->cvalue;
     newNode->attr.name = token->svalue;
-    std::cout << token->tokenstr << " test \n";
+    // std::cout << token->tokenstr << " test \n";
     // newNode->attr.string = token->tokenstr;
 
     return newNode;
@@ -244,7 +244,7 @@ void printTreeNode(FILE *out, TreeNode *syntaxTree, bool showExpType, bool showA
     }
     else 
     fprintf(out, "Hey I'm a node, say something here.");
-    fprintf(out, " [line: %d]", syntaxTree->lineno-1);
+    fprintf(out, " [line: %d]", syntaxTree->lineno);
     return;
 }
 
