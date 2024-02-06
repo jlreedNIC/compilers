@@ -14,6 +14,7 @@ char *lastToken=(char *)"";
 //extern int numErrors;
 
 int setValue(int linenum, int tokenClass, char *svalue) {
+    yylval.tinfo = new TokenData;
     yylval.tinfo->tokenclass = tokenClass;
     yylval.tinfo->linenum = linenum;
     yylval.tinfo->tokenstr = strdup(svalue);
