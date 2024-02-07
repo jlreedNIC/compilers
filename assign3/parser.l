@@ -25,8 +25,8 @@ int setValue(int linenum, int tokenClass, char *svalue) {
 
     yylval.tinfo->tokenstr = lastToken = strdup(svalue);
 
-    // if(svalue == "+=")
-    //     std::cout << tokenClass << "\n";
+    yylval.tinfo->cvalue = svalue[1];
+
     switch (tokenClass) {
 
     case NUMCONST:
@@ -43,6 +43,16 @@ int setValue(int linenum, int tokenClass, char *svalue) {
          else yylval.tinfo->nvalue = 0;
          break;
     case CHARCONST:
+        if(svalue[1] == '\\')
+        {
+          if(svalue[2] == 'n')
+               yylval.tinfo->cvalue = '\n';
+          else if(svalue[2] == '0')
+               yylval.tinfo->cvalue = '\0';
+        }
+        else 
+          yylval.tinfo->svalue = strdup(svalue);
+        break;
         //  yylval.tinfo->svalue = '\'' + svalue[0] + '\'';
         //  break;
     case STRINGCONST:
@@ -58,9 +68,9 @@ int setValue(int linenum, int tokenClass, char *svalue) {
     case LEQ:
     case GEQ:
     case EQ:
-    case NOT:
-    case AND:
     case OR:
+    case AND:
+    case NOT:
     case '=': // op
     case '*':
     case '+':

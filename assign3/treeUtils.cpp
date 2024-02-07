@@ -256,7 +256,10 @@ void printTreeNode(FILE *out, TreeNode *syntaxTree, bool showExpType, bool showA
                 }
                 else if(syntaxTree->type == ExpType::Char)
                 {
-                    fprintf(out, " %s", syntaxTree->attr.name);
+                    if(syntaxTree->isArray)
+                        fprintf(out, " %s", syntaxTree->attr.name);
+                    else
+                        fprintf(out, " '%c'", syntaxTree->attr.cvalue);
                 }
                 else fprintf(out, " %d", syntaxTree->attr.value);
                 break;

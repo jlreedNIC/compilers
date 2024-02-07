@@ -323,10 +323,24 @@ argList : argList ',' exp                    { $$ = addSibling($1, $3); printDeb
    | exp                                     { $$ = $1; printDebug("argList exp"); }
    ;
 
-constant : NUMCONST                          { $$ = newExpNode(ExpKind::ConstantK, $1); $$->type = ExpType::Integer; printDebug("numconst"); }
-         | CHARCONST                         { $$ = newExpNode(ExpKind::ConstantK, $1); $$->type = ExpType::Char; printDebug("charconst"); }
-         | STRINGCONST                       { $$ = newExpNode(ExpKind::ConstantK, $1); $$->type = ExpType::Char; printDebug("stringconst"); }
-         | BOOLCONST                         { $$ = newExpNode(ExpKind::ConstantK, $1); $$->type = ExpType::Boolean; printDebug("boolconst"); }
+constant : NUMCONST                          { $$ = newExpNode(ExpKind::ConstantK, $1); 
+                                               $$->type = ExpType::Integer; 
+                                               $$->isArray = false;
+                                               $$->size = 1;               // not needed for asn3, but asn4
+                                               printDebug("numconst"); }
+         | CHARCONST                         { $$ = newExpNode(ExpKind::ConstantK, $1); 
+                                               $$->type = ExpType::Char; 
+                                               $$->isArray = false;
+                                               $$->attr.cvalue = $1->cvalue;  // not needed for asn3, but asn4
+                                               printDebug("charconst"); }
+         | STRINGCONST                       { $$ = newExpNode(ExpKind::ConstantK, $1); 
+                                               $$->type = ExpType::Char; 
+                                               $$->isArray = true; 
+                                               printDebug("stringconst"); }
+         | BOOLCONST                         { $$ = newExpNode(ExpKind::ConstantK, $1); 
+                                               $$->type = ExpType::Boolean; 
+                                               $$->isArray = false;
+                                               printDebug("boolconst"); }
          ;
 
 /* assignment or const */
