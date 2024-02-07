@@ -23,11 +23,13 @@ TreeNode *addSibling(TreeNode *t, TreeNode *s)
    cout << "in addSibling func.\n";
    if(s == nullptr)
    {
+      cout << "Sibling is null!\n";
       exit(1);
    }
 
    if(t == nullptr)
    {
+      cout << "main is null\n";
       return s;
    }
 
@@ -38,6 +40,7 @@ TreeNode *addSibling(TreeNode *t, TreeNode *s)
       ptr = ptr->sibling;
    }
    ptr->sibling = s;
+   cout << "leaving sibling\n";
    return s;
 }
 
@@ -79,7 +82,7 @@ TreeNode *syntaxTree;
 %type    <type>   typeSpec
 
 // token data
-%token   <tinfo>  OP '=' '*' '+' '/' '%' '-'
+%token   <tinfo>  '=' '*' '+' '/' '%' '-' '<' '>' '?'
 %token   <tinfo>  '(' ')' ',' ';' '[' '{' '}' ']' ':'
 %token   <tinfo>  NEQ LEQ GEQ EQ
 %token   <tinfo>  MAX MIN 
@@ -100,29 +103,29 @@ TreeNode *syntaxTree;
 
 
 %%
-program : precomList declList                { syntaxTree = $2;}
+program : precomList declList                { cout << "start-"; syntaxTree = $2;}
    ;
 
-precomList : precomList PRECOMPILER          { cout << yylval.tinfo->tokenstr << "\n"; $$ = nullptr; }
-   | PRECOMPILER                             { cout << yylval.tinfo->tokenstr << "\n"; $$ = nullptr; }
+precomList : precomList PRECOMPILER          { cout << yylval.tinfo->tokenstr << "\n"; $$ = nullptr;}
+   | PRECOMPILER                             { cout << "start2- " << yylval.tinfo->tokenstr << "\n"; $$ = nullptr; }
    ;
 
-declList : declList decl                     { $$ = addSibling($1, $2);}
-   | decl                                    { $$ = $1;}
+declList : declList decl                     { cout << "declList- "; $$ = addSibling($1, $2);}
+   | decl                                    { cout << "decl- "; $$ = $1;}
    ;
 
-decl : varDecl                               { $$ = $1; }
-   | funDecl                                 { $$ = $1; }
+decl : varDecl                               { cout << "varDecl- "; $$ = $1; }
+   | funDecl                                 { cout << "funDecl- "; $$ = $1; }
    ;
 
-varDecl : typeSpec varDeclList ';'           { $$ = $2; setType($2, $1, false); }
+varDecl : typeSpec varDeclList ';'           { cout << "typespec varDeclL- "; $$ = $2; setType($2, $1, false); }
    ;
 
-varDeclList : varDeclList ',' varDeclInit    { $$ = addSibling($1, $3);}
-   | varDeclInit                             { $$ = $1;}
+varDeclList : varDeclList ',' varDeclInit    { cout << "varDeclList- "; $$ = addSibling($1, $3);}
+   | varDeclInit                             { cout << "varDeclInit- "; $$ = $1;}
    ;
 
-varDeclInit : varDeclId                      { $$ = $1;}
+varDeclInit : varDeclId                      { cout << "varDeclId- "; $$ = $1;}
    | varDeclId ':' simpleExp                 { $$ = addSibling($1, $3);}
    ;
 
@@ -151,13 +154,13 @@ parmId : ID                                  {  $$ = newDeclNode(DeclKind::Param
                                                 $$->isArray = true; $$->isStatic = false;}
    ;
 
-compoundstmt : '{' localDecls stmtList '}'   { $$ = newStmtNode(StmtKind::CompoundK, $1, $2, $3);}
+compoundstmt : '{' localDecls stmtList '}'   { cout << "compound stmt- "; $$ = newStmtNode(StmtKind::CompoundK, $1, $2, $3);}
    ;
 
-matched : IF simpleExp THEN matched ELSE matched   { $$ = nullptr;}
-   | WHILE simpleExp DO matched              { $$ = nullptr;}
-   | FOR ID '=' iterRange DO matched         { $$ = nullptr;}
-   | expstmt                                 { $$ = $1;}
+matched : IF simpleExp THEN matched ELSE matched   { $$ = newStmtNode(StmtKind::IfK, $1, $2, $4, $6);}
+   | WHILE simpleExp DO matched              { $$ = newStmtNode(StmtKind::WhileK, $1, $2, $4);}
+   | FOR ID '=' iterRange DO matched         { $$ = newStmtNode(StmtKind::ForK, $1, $4, $6);}
+   | expstmt                                 { cout << "matched exp- "; $$ = $1;}
    | compoundstmt                            { $$ = $1;}
    | returnstmt                              { $$ = $1;}
    | breakstmt                               { $$ = $1;}
@@ -167,87 +170,87 @@ iterRange : simpleExp TO simpleExp           {  $$ = nullptr;}
    | simpleExp TO simpleExp BY simpleExp     {  $$ = nullptr;}
    ;
 
-unmatched : IF simpleExp THEN stmt           {  $$ = nullptr;}
+unmatched : IF simpleExp THEN stmt           {  $$ = newStmtNode(StmtKind::IfK, $1, $2, $4);}
    | IF simpleExp THEN matched ELSE unmatched   {  $$ = nullptr;}
    | WHILE simpleExp DO unmatched            {  $$ = nullptr;}
    | FOR ID '=' iterRange DO unmatched       {  $$ = nullptr;}
    ;
 
-localDecls : localDecls scopedVarDecl        {  $$ = nullptr;}
+localDecls : localDecls scopedVarDecl        {  $$ = addSibling($1, $2);}
    | /* empty */                             {  $$ = nullptr;}
    ;
 
-stmtList : stmtList stmt                     {  $$ = nullptr;}
-   | /* empty*/                              {  $$ = nullptr;}
+stmtList : stmtList stmt                     { cout << "stmtList- "; $$ = addSibling($1, $2);}
+   | /* empty */                              {  $$ = nullptr;}
    ;
 
-returnstmt : RETURN ';'                      {  } // $$ = StmtKind::ReturnK;}
-   | RETURN exp ';'                          {  $$ = nullptr;}
+returnstmt : RETURN ';'                      { $$ = newStmtNode(StmtKind::ReturnK, $1);}
+   | RETURN exp ';'                          { $$ = newStmtNode(StmtKind::ReturnK, $1, $2);}
    ;
 
-scopedVarDecl : STATIC typeSpec varDeclList ';'    {  $$ = nullptr;}
-   | typeSpec varDeclList ';'                {  $$ = nullptr;}
+scopedVarDecl : STATIC typeSpec varDeclList ';'    { $$ = $3; setType($3, $2, true);}
+   | typeSpec varDeclList ';'                { $$ = $2; setType($2, $1, false);}
    ;
 
-stmt : matched                               {  $$ = $1;}
-   | unmatched                               {  $$ = $1;}
+stmt : matched                               { cout << "matched stmt- "; $$ = $1;}
+   | unmatched                               { $$ = $1;}
    ;
 
-typeSpec : INT                               {  $$ = ExpType::Integer;}
-   | BOOL                                    {  $$ = ExpType::Boolean;}
-   | CHAR                                    {  $$ = ExpType::Char;}
+typeSpec : INT                               { $$ = ExpType::Integer;}
+   | BOOL                                    { $$ = ExpType::Boolean;}
+   | CHAR                                    { $$ = ExpType::Char;}
    ;
 
 funDecl : typeSpec ID '(' parms ')' stmt     { $$ = newDeclNode(DeclKind::FuncK, $1, $2, $4, $6);}
    | ID '(' parms ')' stmt                   { $$ = newDeclNode(DeclKind::FuncK, ExpType::Void, $1, $3, $5);}
    ;
 
-breakstmt : BREAK                            {  $$ = nullptr;}
+breakstmt : BREAK ';'                        { $$ = newStmtNode(StmtKind::BreakK, $1);}
    ;
 
-expstmt : exp                                {  $$ = $1;}
+expstmt : exp ';'                            { cout << "expstmt- "; $$ = $1;}
    ;
 
-exp : mutable assignop exp                   { cout << "mutable: "; $$ = newExpNode(ExpKind::OpK, $2, $1, $3);}
-   | mutable INC                             {  $$ = nullptr;}
-   | mutable DEC                             {  $$ = nullptr;}
-   | simpleExp                               { cout << "simpleExp: "; $$ = $1;}
-   | mutable assignop ERROR                  { cout << "mutable error "; $$ = nullptr;}
+exp : mutable assignop exp                   { cout << "mutable: "; $$ = newExpNode(ExpKind::AssignK, $2, $1, $3); $$->isAssigned = true;} //CHECK HERE
+   | mutable INC                             { $$ = newExpNode(ExpKind::OpK, $2, $1);}
+   | mutable DEC                             { $$ = newExpNode(ExpKind::OpK, $2, $1);}
+   | simpleExp                               { cout << "simpleExp- "; $$ = $1;}
+   | mutable assignop ERROR                  { cout << "mutable error "; $$ = newExpNode(ExpKind::AssignK, $2, $1); yyerror($3->tokenstr);}
    ;
 
 assignop : '='                               { $$ = $1; }
-   | ADDASS                                  { $$ = $1;}
-   | SUBASS                                  { $$ = $1;}
-   | MULASS                                  { $$ = $1;}
-   | DIVASS                                  { $$ = $1;}
+   | ADDASS                                  { $$ = $1; }
+   | SUBASS                                  { $$ = $1; }
+   | MULASS                                  { $$ = $1; }
+   | DIVASS                                  { $$ = $1; }
    ;
 
 simpleExp : simpleExp OR andExp              { cout << "simpleexp new node\n"; $$ = newExpNode(ExpKind::OpK, $2, $1, $3);}
-   | andExp                                  { cout << "simpleexp and "; $$ = $1;}
+   | andExp                                  { cout << "simpleexp and- "; $$ = $1;}
    ;
 
-andExp : andExp AND unaryRelExp              { cout << "and op "; $$ = newExpNode(ExpKind::OpK, $2, $1, $3);}
-   | unaryRelExp                             { cout << "and unary "; $$ = $1;}
+andExp : andExp AND unaryRelExp              { cout << "and op- "; $$ = newExpNode(ExpKind::OpK, $2, $1, $3);}
+   | unaryRelExp                             { cout << "and unary- "; $$ = $1;}
    ;
 
-unaryRelExp : NOT unaryRelExp                { cout << "not unary exp "; $$ = nullptr;}
-   | relExp                                  { cout << "rel exp "; $$ = $1;}
+unaryRelExp : NOT unaryRelExp                { cout << "not unary exp- "; $$ = nullptr;}
+   | relExp                                  { cout << "rel exp- "; $$ = $1;}
    ;
 
-relExp : minmaxExp relop minmaxExp           {  $$ = newExpNode(ExpKind::OpK, $2, $1, $3);}
-   | minmaxExp                               { cout << "minmax exp "; $$ = $1;}
+relExp : minmaxExp relop minmaxExp           { $$ = newExpNode(ExpKind::OpK, $2, $1, $3);}
+   | minmaxExp                               { cout << "minmax exp- "; $$ = $1;}
    ;
 
-relop : LEQ                                  {  $$ = nullptr;}
-   | '<'                                     {  $$ = nullptr;}
-   | '>'                                     {  $$ = nullptr;}
-   | GEQ                                     {  $$ = nullptr;}
-   | EQ                                      {  $$ = nullptr;} 
-   | NEQ                                     {  $$ = nullptr;}
+relop : LEQ                                  { $$ = $1;}
+   | '<'                                     { $$ = $1;}
+   | '>'                                     { $$ = $1;}
+   | GEQ                                     { $$ = $1;}
+   | EQ                                      { $$ = $1;} 
+   | NEQ                                     { $$ = $1;}
    ;
 
-minmaxExp : minmaxExp minmaxop sumExp        {  $$ = newExpNode(ExpKind::OpK, $2, $1, $3);}
-   | sumExp                                  { cout << "sum exp "; $$ = $1;}
+minmaxExp : minmaxExp minmaxop sumExp        { $$ = newExpNode(ExpKind::OpK, $2, $1, $3);}
+   | sumExp                                  { cout << "sum exp- "; $$ = $1;}
    ;
 
 minmaxop : MAX                               {  $$ = $1;}
@@ -255,7 +258,7 @@ minmaxop : MAX                               {  $$ = $1;}
    ;
 
 sumExp : sumExp sumop mulExp                 {  $$ = newExpNode(ExpKind::OpK, $2, $1, $3);}
-   | mulExp                                  { cout << "muloexp "; $$ = $1;}
+   | mulExp                                  { cout << "muloexp- "; $$ = $1;}
    ;
 
 sumop : '+'                                  {  $$ = $1;}
@@ -263,7 +266,7 @@ sumop : '+'                                  {  $$ = $1;}
    ;
 
 mulExp : mulExp mulop unaryExp               {  $$ = newExpNode(ExpKind::OpK, $2, $1, $3);}
-   | unaryExp                                { cout << "unaryexp "; $$ = $1;}
+   | unaryExp                                { cout << "unaryexp- "; $$ = $1;}
    ;
 
 mulop : '*'                                  {  $$ = $1;}
@@ -271,13 +274,13 @@ mulop : '*'                                  {  $$ = $1;}
    | '%'                                     {  $$ = $1;}
    ;
 
-unaryExp : unaryop unaryExp                  {  $$ = nullptr;}
+unaryExp : unaryop unaryExp                  {  $$ = newExpNode(ExpKind::OpK, $1, $2);}
    | factor                                  { cout << "factor- "; $$ = $1;}
    ;
 
-unaryop : '-'                                {  $$ = nullptr;}
-   | '*'                                     {  $$ = nullptr;}
-   | '?'                                     {  $$ = nullptr;}
+unaryop : '-'                                {  $$ = $1;}
+   | '*'                                     {  $$ = $1;}
+   | '?'                                     {  $$ = $1;}
    ;
 
 factor : immutable                           { cout << "immutable- "; $$ = $1;}
@@ -293,67 +296,24 @@ immutable : '(' exp ')'                      {  $$ = $2;}
    | constant                                { cout << "constant- "; $$ = $1;}
    ;
 
-call : ID '(' args ')'                       {  $$ = nullptr;}
+call : ID '(' args ')'                       {  $$ = newExpNode(ExpKind::CallK, $1, $3);}
    ;
 
-args : argList                               {  $$ = nullptr;}
+args : argList                               {  $$ = $1;}
    | /* empty */                             {  $$ = nullptr;}
    ;
 
-argList : argList ',' exp                    {  $$ = nullptr;}
-   | exp                                     {  $$ = nullptr;}
+argList : argList ',' exp                    {  $$ = addSibling($1, $3);}
+   | exp                                     {  $$ = $1;}
    ;
 
-constant : NUMCONST                          { cout << "numconst- "; $$ = newExpNode(ExpKind::ConstantK, $1); $$->attr.value = $1->nvalue;}
+constant : NUMCONST                          { cout << "numconst- "; $$ = newExpNode(ExpKind::ConstantK, $1); $$->attr.value = $1->nvalue; }
          | CHARCONST                         { cout << "charconst- "; $$ = newExpNode(ExpKind::ConstantK, $1);}
          | STRINGCONST                       { cout << "stringconst- "; $$ = newExpNode(ExpKind::ConstantK, $1);}
          | BOOLCONST                         { cout << "boolconst- "; $$ = newExpNode(ExpKind::ConstantK, $1);}
          ;
 
-/*
-program  :  program term
-   |  term  {$$=$1;}
-   ;
-term  : 
-      OP {printToken(yylval.tinfo, "OP");}
-   |  NEQ {printToken(yylval.tinfo, "NEQ");}
-   |  GEQ {printToken(yylval.tinfo, "GEQ");}
-   |  LEQ {printToken(yylval.tinfo, "LEQ");}
-   |  AND {printToken(yylval.tinfo, "AND");}
-   |  PRECOMPILER {printToken(yylval.tinfo, "PRECOMPILER");}
-   |  NUMCONST {printToken(yylval.tinfo, "NUMCONST");}
-   |  ID {printToken(yylval.tinfo, "ID");}
-   |  INT {printToken(yylval.tinfo, "INT");}
-   |  CHAR {printToken(yylval.tinfo, "CHAR");}
-   |  STRINGCONST {printToken(yylval.tinfo, "STRINGCONST");}
-   |  IF {printToken(yylval.tinfo, "IF");}
-   |  THEN {printToken(yylval.tinfo, "THEN");}
-   |  ELSE {printToken(yylval.tinfo, "ELSE");}
-   |  WHILE {printToken(yylval.tinfo, "WHILE");}
-   |  DO {printToken(yylval.tinfo, "DO");}
-   |  FOR {printToken(yylval.tinfo, "FOR");}
-   |  TO {printToken(yylval.tinfo, "TO");}
-   |  BY {printToken(yylval.tinfo, "BY");}
-   |  OR {printToken(yylval.tinfo, "OR");}
-   |  BOOL {printToken(yylval.tinfo, "BOOL");}
-   |  STATIC {printToken(yylval.tinfo, "STATIC");}
-   |  RETURN {printToken(yylval.tinfo, "RETURN");}
-   |  BREAK {printToken(yylval.tinfo, "BREAK");}
-   |  BOOLCONST {printToken(yylval.tinfo, "BOOLCONST");}
-   |  COMMENT {printToken(yylval.tinfo, "COMMENT");}
-   |  MAX {printToken(yylval.tinfo, "MAX");}
-   |  MIN {printToken(yylval.tinfo, "MIN");}
-   |  MULASS {printToken(yylval.tinfo, "MULASS");}
-   |  DIVASS {printToken(yylval.tinfo, "DIVASS");}
-   |  ADDASS {printToken(yylval.tinfo, "ADDASS");}
-   |  SUBASS {printToken(yylval.tinfo, "SUBASS");}
-   |  NOT {printToken(yylval.tinfo, "NOT");}
-   |  EQ {printToken(yylval.tinfo, "EQ");}
-   |  CHARCONST {printToken(yylval.tinfo, "CHARCONST");}
-   |  INC {printToken(yylval.tinfo, "INC");}
-   |  DEC {printToken(yylval.tinfo, "DEC");}
-   |  ERROR    {cout << "ERROR(SCANNER Line " << yylval.tinfo.linenum << "): Invalid input character " << yylval.tinfo.tokenstr << endl; }
-   ; */
+/* assignment or const */
 %%
 void yyerror (const char *msg)
 { 

@@ -31,8 +31,6 @@ int setValue(int linenum, int tokenClass, char *svalue) {
          break;
     case ID:
          yylval.tinfo->svalue = strdup(svalue);
-        //  strcpy(yylval.tinfo->svalue, svalue);
-        //  cout << yylval.tinfo->svalue << "\n";
          break;
 
 //     case OP:

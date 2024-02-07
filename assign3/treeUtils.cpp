@@ -48,7 +48,7 @@ TreeNode *newDeclNode(DeclKind kind,
                       TreeNode *c1,
                       TreeNode *c2)  // save TokenData block!!
 {
-//   std::cout << "newDeclNode created of " << expTypeToStr(type) << "\n";
+  std::cout << "newDeclNode created of " << expTypeToStr(type) << "\n";
     // did in class
     TreeNode *newNode = new TreeNode;
     newNode->nodekind = NodeKind::DeclK;
@@ -80,7 +80,7 @@ TreeNode *newStmtNode(StmtKind kind,
                       TreeNode *c1,
                       TreeNode *c2)
 {
-    //std::cout << "adding new stmtNode\n";
+    std::cout << "adding new stmtNode\n";
     // did in class
     TreeNode *newNode = new TreeNode;
     newNode->nodekind = NodeKind::StmtK;
@@ -109,7 +109,7 @@ TreeNode *newExpNode(ExpKind kind,
                      TreeNode *c1,
                      TreeNode *c2)
 {
-    // std::cout << "new exp node\n";
+    std::cout << "new exp node\n";
     // did in class
     TreeNode *newNode = new TreeNode;
     newNode->nodekind = NodeKind::ExpK;
@@ -121,6 +121,7 @@ TreeNode *newExpNode(ExpKind kind,
 
     newNode->nodeNum = nodeNumber++;
     newNode->lineno = token->linenum;
+
     newNode->attr.op = token->tokenclass;
     newNode->attr.value = token->nvalue;
     newNode->attr.cvalue = token->cvalue;
@@ -258,7 +259,7 @@ void printDots(FILE *out, int depth)
 
 void printTree(FILE *out, TreeNode *syntaxTree, bool showExpType, bool showAllocation)
 {
-//   fprintf(out, "printing tree\n");
+  fprintf(out, "printing tree\n");
     if(syntaxTree == nullptr)
     {
         fprintf(out, "NULL\n");
@@ -274,7 +275,7 @@ void printTreeRecursive(FILE *out, TreeNode *syntaxTree, bool showExpType, bool 
     // check if null
     if(syntaxTree == NULL) 
     {
-//        fprintf(out, "node is null\n");
+    //    fprintf(out, "node is null\n");
         return;
     }
 
