@@ -62,14 +62,12 @@ TreeNode *newDeclNode(DeclKind kind,
     newNode->nodeNum = nodeNumber++;
     newNode->lineno = token->linenum;
 
-    // std::cout << "starting token setting\n";
-    // // setting token data??
     newNode->attr.op = token->tokenclass;
-    // newNode->attr.value = token->nvalue;
-    // newNode->attr.cvalue = token->cvalue;
+    newNode->attr.value = token->nvalue;
+    newNode->attr.cvalue = token->cvalue;
     newNode->attr.name = token->svalue;
-    // std::cout << token->tokenstr << " test \n";
     // newNode->attr.string = token->tokenstr;
+    // std::cout << newNode->attr.name << " " << newNode->isArray << '\n';
 
     return newNode;
 }
@@ -150,21 +148,32 @@ char *tokenToStr(int type)
     return str;
 }
 
+char result[100];
 char *expTypeToStr(ExpType type, bool isArray, bool isStatic)
 {
     char *str;
 
     if (type == ExpType::Void)
         str = (char *)"type void";
+        // strType += "type void";
     else if (type == ExpType::Integer)
         str = (char *)"type int";
+        // strType += "type int";
     else if (type == ExpType::Boolean)
         str = (char *)"type bool";
+        // strType += "type bool";
     else if (type == ExpType::Char)
         str = (char *)"type char";
+        // strType += "type char";
     else str = (char *)"undefined";
 
-    return str;
+    // if(isArray)
+    //     std::cout << "is array\n";
+    // else
+    //     std::cout << "not array- ";
+
+    sprintf(result, "%s%s%s", (isArray ? (char *)"array of " : ""), (isStatic ? (char *)"static " : ""), str);
+    return result;
 }
 
 void printTreeNode(FILE *out, TreeNode *syntaxTree, bool showExpType, bool showAllocation)
@@ -174,15 +183,15 @@ void printTreeNode(FILE *out, TreeNode *syntaxTree, bool showExpType, bool showA
         switch(syntaxTree->kind.decl)
         {
             case DeclKind::VarK:
-                fprintf(out, "Var: %s of %s", syntaxTree->attr.name, expTypeToStr(syntaxTree->type));
+                fprintf(out, "Var: %s of %s", syntaxTree->attr.name, expTypeToStr(syntaxTree->type, syntaxTree->isArray, syntaxTree->isStatic));
                 break;
             case DeclKind::FuncK:
                 fprintf(out, "Func:");
                 fprintf(out, " %s", syntaxTree->attr.name);
-                fprintf(out, " returns %s", expTypeToStr(syntaxTree->type));
+                fprintf(out, " returns %s", expTypeToStr(syntaxTree->type, syntaxTree->isArray, syntaxTree->isStatic));
                 break;
             case DeclKind::ParamK:
-                fprintf(out, "Parameter");
+                fprintf(out, "Parm: %s of %s", syntaxTree->attr.name, expTypeToStr(syntaxTree->type, syntaxTree->isArray, syntaxTree->isStatic));
                 break;
             default:
                 fprintf(out, "Hey I'm a declK node.");
@@ -209,10 +218,10 @@ void printTreeNode(FILE *out, TreeNode *syntaxTree, bool showExpType, bool showA
                 fprintf(out, "Return");
                 break;
             case StmtKind::BreakK:
-                fprintf(out, "Break:");
+                fprintf(out, "Break");
                 break;
             case StmtKind::RangeK:
-                fprintf(out, "Range:");
+                fprintf(out, "Range");
                 break;
             default:
                 fprintf(out, "Hey I'm a stmtK node.");
@@ -224,19 +233,38 @@ void printTreeNode(FILE *out, TreeNode *syntaxTree, bool showExpType, bool showA
         switch(syntaxTree->kind.exp)
         {
             case ExpKind::AssignK:
-                fprintf(out, "Assign: %c", syntaxTree->attr.cvalue);
+                fprintf(out, "Assign: %s", syntaxTree->attr.name);
                 break;
             case ExpKind::CallK:
-                fprintf(out, "Call:");
+                fprintf(out, "Call: %s", syntaxTree->attr.name);
                 break;
             case ExpKind::ConstantK:
-                fprintf(out, "Const %d", syntaxTree->attr.value);
+                char *value;
+
+                fprintf(out, "Const");
+
+                if(syntaxTree->type == ExpType::Boolean)
+                {
+                    if(syntaxTree->attr.value == 1)
+                    {
+                        value = (char *)"true";
+                    }
+                    else
+                        value = (char *)"false";
+
+                    fprintf(out, " %s", value);
+                }
+                else if(syntaxTree->type == ExpType::Char)
+                {
+                    fprintf(out, " %s", syntaxTree->attr.name);
+                }
+                else fprintf(out, " %d", syntaxTree->attr.value);
                 break;
             case ExpKind::IdK:
                 fprintf(out, "Id: %s", syntaxTree->attr.name);
                 break;
             case ExpKind::OpK:
-                fprintf(out, "Op:");
+                fprintf(out, "Op: %s", syntaxTree->attr.name);
                 break;
             default:
                 fprintf(out, "Hey I'm a ExpK node.");
@@ -307,7 +335,9 @@ void printTreeRecursive(FILE *out, TreeNode *syntaxTree, bool showExpType, bool 
     TreeNode *sibling = syntaxTree->sibling;
     if(sibling != NULL)
     {
+        printDots(out, depth - 1);
         fprintf(out, "Sibling: %d  ", siblingCount);
         printTreeRecursive(out, sibling, showExpType, showAllocation, depth, siblingCount+1);
     }
+    // std::cout << "sibling null!\n";
 }

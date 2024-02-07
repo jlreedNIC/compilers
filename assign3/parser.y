@@ -29,7 +29,7 @@ void printDebug(string msg)
 
 TreeNode *addSibling(TreeNode *t, TreeNode *s)
 {
-   printDebug("in addSibling func\n");
+   // printDebug("in addSibling func\n");
    if(s == nullptr)
    {
       printDebug("Sibling is null!\n");
@@ -38,26 +38,26 @@ TreeNode *addSibling(TreeNode *t, TreeNode *s)
 
    if(t == nullptr)
    {
-      printDebug("main is null\n");
+      // printDebug("main is null\n");
       return s;
    }
 
-   TreeNode *ptr = new TreeNode;
-   ptr = t;
+   TreeNode *ptr = t;
+   // ptr = t;
    while(ptr->sibling != nullptr)
    {
       ptr = ptr->sibling;
    }
    ptr->sibling = s;
 
-   printDebug("leaving sibling\n");
-   return s;
+   // printDebug("leaving sibling\n");
+   return t;
 }
 
 // pass the static and type attribute down the sibling list
 void setType(TreeNode *t, ExpType type, bool isStatic)
 {
-   printDebug("in settype func.\n");
+   // printDebug("in settype func.\n");
    while (t != nullptr)
    {
       t->type = type;
@@ -132,8 +132,8 @@ decl : varDecl                               { $$ = $1; printDebug("varDecl"); }
 varDecl : typeSpec varDeclList ';'           { $$ = $2; setType($2, $1, false); printDebug("typespec varDeclL"); }
    ;
 
-scopedVarDecl : STATIC typeSpec varDeclList ';'    { $$ = $3; setType($3, $2, true); printDebug("scopedVarDecl"); }
-   | typeSpec varDeclList ';'                { $$ = $2; setType($2, $1, false); printDebug("type varDeclList"); }
+scopedVarDecl : STATIC typeSpec varDeclList ';'    { $$ = $3; setType($3, $2, true); $$->isStatic = true; printDebug("scopedVarDecl"); }
+   | typeSpec varDeclList ';'                { $$ = $2; setType($2, $1, false); $$->isStatic = false; printDebug("type varDeclList"); }
    ;
 
 varDeclList : varDeclList ',' varDeclInit    { $$ = addSibling($1, $3); printDebug("varDeclList"); }
@@ -141,7 +141,7 @@ varDeclList : varDeclList ',' varDeclInit    { $$ = addSibling($1, $3); printDeb
    ;
 
 varDeclInit : varDeclId                      { $$ = $1; printDebug("varDeclId"); }
-   | varDeclId ':' simpleExp                 { $$ = addSibling($1, $3);}
+   | varDeclId ':' simpleExp                 { $$ = $1; $1->child[0] = $3; } // addSibling($1, $3);}
    ;
 
 varDeclId : ID                               { $$ = newDeclNode(DeclKind::VarK, UndefinedType, $1); $$->isArray = false;}
@@ -184,21 +184,23 @@ stmt : matched                               { $$ = $1; printDebug("matched stmt
 
 matched : IF simpleExp THEN matched ELSE matched   { $$ = newStmtNode(StmtKind::IfK, $1, $2, $4, $6); }
    | WHILE simpleExp DO matched              { $$ = newStmtNode(StmtKind::WhileK, $1, $2, $4); }
-   | FOR ID '=' iterRange DO matched         { $$ = newStmtNode(StmtKind::ForK, $1, $4, $6); }
+   | FOR ID '=' iterRange DO matched         { $$ = newStmtNode(StmtKind::ForK, $1, nullptr, $4, $6); 
+                                               $$->child[0] = newDeclNode(DeclKind::VarK, ExpType::Integer, $2);}
    | expstmt                                 { $$ = $1; printDebug("matched exp"); }
    | compoundstmt                            { $$ = $1; }
    | returnstmt                              { $$ = $1; }
    | breakstmt                               { $$ = $1; }
    ;
 
-iterRange : simpleExp TO simpleExp           {  $$ = nullptr; }
-   | simpleExp TO simpleExp BY simpleExp     {  $$ = nullptr; }
+iterRange : simpleExp TO simpleExp           {  $$ = newStmtNode(StmtKind::RangeK, $2, $1, $3); }
+   | simpleExp TO simpleExp BY simpleExp     {  $$ = newStmtNode(StmtKind::RangeK, $2, $1, $3, $5); }
    ;
 
-unmatched : IF simpleExp THEN stmt           {  $$ = newStmtNode(StmtKind::IfK, $1, $2, $4); }
-   | IF simpleExp THEN matched ELSE unmatched   {  $$ = nullptr; }
-   | WHILE simpleExp DO unmatched            {  $$ = nullptr; }
-   | FOR ID '=' iterRange DO unmatched       {  $$ = nullptr; }
+unmatched : IF simpleExp THEN stmt           { $$ = newStmtNode(StmtKind::IfK, $1, $2, $4); }
+   | IF simpleExp THEN matched ELSE unmatched   { $$ = newStmtNode(StmtKind::IfK, $1, $2, $4, $6); }
+   | WHILE simpleExp DO unmatched            { $$ = newStmtNode(StmtKind::WhileK, $1, $2, $4); }
+   | FOR ID '=' iterRange DO unmatched       { $$ = newStmtNode(StmtKind::ForK, $1, nullptr, $4, $6); 
+                                               $$->child[0] = newDeclNode(DeclKind::VarK, ExpType::Integer, $2);}
    ;
 
 expstmt : exp ';'                            { $$ = $1; printDebug("expstmt"); }
@@ -225,8 +227,8 @@ breakstmt : BREAK ';'                        { $$ = newStmtNode(StmtKind::BreakK
    ;
 
 exp : mutable assignop exp                   { $$ = newExpNode(ExpKind::AssignK, $2, $1, $3); $$->isAssigned = true; printDebug("mutable"); } 
-   | mutable INC                             { $$ = newExpNode(ExpKind::OpK, $2, $1);}
-   | mutable DEC                             { $$ = newExpNode(ExpKind::OpK, $2, $1);}
+   | mutable INC                             { $$ = newExpNode(ExpKind::AssignK, $2, $1);}
+   | mutable DEC                             { $$ = newExpNode(ExpKind::AssignK, $2, $1);}
    | simpleExp                               { $$ = $1; printDebug("simpleExp"); }
    | mutable assignop ERROR                  { $$ = newExpNode(ExpKind::AssignK, $2, $1); yyerror($3->tokenstr); printDebug("mutable error"); }
    ;
@@ -246,7 +248,7 @@ andExp : andExp AND unaryRelExp              { $$ = newExpNode(ExpKind::OpK, $2,
    | unaryRelExp                             { $$ = $1; printDebug("and unary"); }
    ;
 
-unaryRelExp : NOT unaryRelExp                { $$ = nullptr; printDebug("not unary exp"); }
+unaryRelExp : NOT unaryRelExp                { $$ = newExpNode(ExpKind::OpK, $1, $2); printDebug("not unary exp"); }
    | relExp                                  { $$ = $1; printDebug("rel exp"); }
    ;
 
@@ -291,8 +293,8 @@ unaryExp : unaryop unaryExp                  { $$ = newExpNode(ExpKind::OpK, $1,
    | factor                                  { $$ = $1; printDebug("factor"); }
    ;
 
-unaryop : '-'                                { $$ = $1;}
-   | '*'                                     { $$ = $1;}
+unaryop : '-'                                { $$ = $1; $$->svalue = (char *)"chsign"; }
+   | '*'                                     { $$ = $1; $$->svalue = (char *)"sizeof"; }
    | '?'                                     { $$ = $1;}
    ;
 
@@ -301,7 +303,7 @@ factor : immutable                           { $$ = $1; printDebug("immutable");
    ;
 
 mutable : ID                                 { $$ = newExpNode(ExpKind::IdK, $1); $$->isArray = false;}
-   | ID '[' exp ']'                          { $$ = newExpNode(ExpKind::IdK, $1, $3);  $$->isArray = true;}
+   | ID '[' exp ']'                          { $$ = newExpNode(ExpKind::OpK, $2, nullptr, $3); $$->child[0] = newExpNode(ExpKind::IdK, $1);}
    ;
 
 immutable : '(' exp ')'                      { $$ = $2; printDebug("immutable exp"); }
@@ -320,10 +322,10 @@ argList : argList ',' exp                    { $$ = addSibling($1, $3); printDeb
    | exp                                     { $$ = $1; printDebug("argList exp"); }
    ;
 
-constant : NUMCONST                          { $$ = newExpNode(ExpKind::ConstantK, $1); $$->attr.value = $1->nvalue; printDebug("numconst"); }
-         | CHARCONST                         { $$ = newExpNode(ExpKind::ConstantK, $1); printDebug("charconst"); }
-         | STRINGCONST                       { $$ = newExpNode(ExpKind::ConstantK, $1); printDebug("stringconst"); }
-         | BOOLCONST                         { $$ = newExpNode(ExpKind::ConstantK, $1); printDebug("boolconst"); }
+constant : NUMCONST                          { $$ = newExpNode(ExpKind::ConstantK, $1); $$->type = ExpType::Integer; printDebug("numconst"); }
+         | CHARCONST                         { $$ = newExpNode(ExpKind::ConstantK, $1); $$->type = ExpType::Char; printDebug("charconst"); }
+         | STRINGCONST                       { $$ = newExpNode(ExpKind::ConstantK, $1); $$->type = ExpType::Char; printDebug("stringconst"); }
+         | BOOLCONST                         { $$ = newExpNode(ExpKind::ConstantK, $1); $$->type = ExpType::Boolean; printDebug("boolconst"); }
          ;
 
 /* assignment or const */
