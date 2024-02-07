@@ -57,7 +57,7 @@ whitespace  [\ \t]
 %%
 [\(\)\{\}\[\]\+\=\-\;\:\,\<\>\*\/\%\?]         { return setValue(line, yytext[0], yytext); } // single char tokens
 
-[\/][\/].*      { return setValue(line, COMMENT, yytext); }
+[\/][\/].*      {  }
 
 "!="            { return setValue(line, NEQ, yytext); }
 
