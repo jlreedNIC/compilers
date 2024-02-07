@@ -172,7 +172,7 @@ char *expTypeToStr(ExpType type, bool isArray, bool isStatic)
     // else
     //     std::cout << "not array- ";
 
-    sprintf(result, "%s%s%s", (isArray ? (char *)"array of " : ""), (isStatic ? (char *)"static " : ""), str);
+    sprintf(result, "%s%s%s%s", (isArray && isStatic ? (char *)"static " : ""), (isArray ? (char *)"array of " : ""), (isStatic && !isArray ? (char *)"static " : ""), str);
     return result;
 }
 

@@ -208,6 +208,7 @@ expstmt : exp ';'                            { $$ = $1; printDebug("expstmt"); }
    ;
 
 compoundstmt : '{' localDecls stmtList '}'   { $$ = newStmtNode(StmtKind::CompoundK, $1, $2, $3); printDebug("compound stmt"); }
+   | compoundstmt ';'                        { $$ = $1; }
    ;
 
 
