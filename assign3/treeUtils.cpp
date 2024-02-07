@@ -126,7 +126,7 @@ TreeNode *newExpNode(ExpKind kind,
     newNode->attr.value = token->nvalue;
     newNode->attr.cvalue = token->cvalue;
     newNode->attr.name = token->svalue;
-    newNode->attr.string = token->tokenstr;
+    // newNode->attr.string = token->tokenstr;
 
     return newNode;
 }
@@ -174,7 +174,7 @@ void printTreeNode(FILE *out, TreeNode *syntaxTree, bool showExpType, bool showA
         switch(syntaxTree->kind.decl)
         {
             case DeclKind::VarK:
-                fprintf(out, "Var");
+                fprintf(out, "Var: %s of %s", syntaxTree->attr.name, expTypeToStr(syntaxTree->type));
                 break;
             case DeclKind::FuncK:
                 fprintf(out, "Func:");
@@ -209,10 +209,10 @@ void printTreeNode(FILE *out, TreeNode *syntaxTree, bool showExpType, bool showA
                 fprintf(out, "Return");
                 break;
             case StmtKind::BreakK:
-                fprintf(out, "Break");
+                fprintf(out, "Break:");
                 break;
             case StmtKind::RangeK:
-                fprintf(out, "Range");
+                fprintf(out, "Range:");
                 break;
             default:
                 fprintf(out, "Hey I'm a stmtK node.");
@@ -224,19 +224,19 @@ void printTreeNode(FILE *out, TreeNode *syntaxTree, bool showExpType, bool showA
         switch(syntaxTree->kind.exp)
         {
             case ExpKind::AssignK:
-                fprintf(out, "Assign");
+                fprintf(out, "Assign: %c", syntaxTree->attr.cvalue);
                 break;
             case ExpKind::CallK:
-                fprintf(out, "Call");
+                fprintf(out, "Call:");
                 break;
             case ExpKind::ConstantK:
-                fprintf(out, "Constant");
+                fprintf(out, "Const %d", syntaxTree->attr.value);
                 break;
             case ExpKind::IdK:
-                fprintf(out, "ID: %s", syntaxTree->attr.name);
+                fprintf(out, "Id: %s", syntaxTree->attr.name);
                 break;
             case ExpKind::OpK:
-                fprintf(out, "OP");
+                fprintf(out, "Op:");
                 break;
             default:
                 fprintf(out, "Hey I'm a ExpK node.");
