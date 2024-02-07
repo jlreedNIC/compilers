@@ -108,6 +108,7 @@ program : precomList declList                { cout << "start-"; syntaxTree = $2
 
 precomList : precomList PRECOMPILER          { cout << yylval.tinfo->tokenstr << "\n"; $$ = nullptr;}
    | PRECOMPILER                             { cout << "start2- " << yylval.tinfo->tokenstr << "\n"; $$ = nullptr; }
+   | /* empty */                             { $$ = nullptr; }
    ;
 
 declList : declList decl                     { cout << "declList- "; $$ = addSibling($1, $2);}
@@ -121,6 +122,10 @@ decl : varDecl                               { cout << "varDecl- "; $$ = $1; }
 varDecl : typeSpec varDeclList ';'           { cout << "typespec varDeclL- "; $$ = $2; setType($2, $1, false); }
    ;
 
+scopedVarDecl : STATIC typeSpec varDeclList ';'    { $$ = $3; setType($3, $2, true);}
+   | typeSpec varDeclList ';'                { $$ = $2; setType($2, $1, false);}
+   ;
+
 varDeclList : varDeclList ',' varDeclInit    { cout << "varDeclList- "; $$ = addSibling($1, $3);}
    | varDeclInit                             { cout << "varDeclInit- "; $$ = $1;}
    ;
@@ -131,6 +136,15 @@ varDeclInit : varDeclId                      { cout << "varDeclId- "; $$ = $1;}
 
 varDeclId : ID                               { $$ = newDeclNode(DeclKind::VarK, UndefinedType, $1); $$->isArray = false;}
    | ID '[' NUMCONST ']'                     { $$ = newDeclNode(DeclKind::VarK, UndefinedType, $1); $$->isArray = true;}
+   ;
+
+typeSpec : INT                               { $$ = ExpType::Integer;}
+   | BOOL                                    { $$ = ExpType::Boolean;}
+   | CHAR                                    { $$ = ExpType::Char;}
+   ;
+
+funDecl : typeSpec ID '(' parms ')' stmt     { $$ = newDeclNode(DeclKind::FuncK, $1, $2, $4, $6);}
+   | ID '(' parms ')' stmt                   { $$ = newDeclNode(DeclKind::FuncK, ExpType::Void, $1, $3, $5);}
    ;
 
 parms : parmList                             { $$ = $1;}
@@ -154,7 +168,8 @@ parmId : ID                                  {  $$ = newDeclNode(DeclKind::Param
                                                 $$->isArray = true; $$->isStatic = false;}
    ;
 
-compoundstmt : '{' localDecls stmtList '}'   { cout << "compound stmt- "; $$ = newStmtNode(StmtKind::CompoundK, $1, $2, $3);}
+stmt : matched                               { cout << "matched stmt- "; $$ = $1;}
+   | unmatched                               { $$ = $1;}
    ;
 
 matched : IF simpleExp THEN matched ELSE matched   { $$ = newStmtNode(StmtKind::IfK, $1, $2, $4, $6);}
@@ -176,6 +191,14 @@ unmatched : IF simpleExp THEN stmt           {  $$ = newStmtNode(StmtKind::IfK, 
    | FOR ID '=' iterRange DO unmatched       {  $$ = nullptr;}
    ;
 
+expstmt : exp ';'                            { cout << "expstmt- "; $$ = $1;}
+   | ';'                                     { $$ = nullptr; }
+   ;
+
+compoundstmt : '{' localDecls stmtList '}'   { cout << "compound stmt- "; $$ = newStmtNode(StmtKind::CompoundK, $1, $2, $3);}
+   ;
+
+
 localDecls : localDecls scopedVarDecl        {  $$ = addSibling($1, $2);}
    | /* empty */                             {  $$ = nullptr;}
    ;
@@ -188,27 +211,7 @@ returnstmt : RETURN ';'                      { $$ = newStmtNode(StmtKind::Return
    | RETURN exp ';'                          { $$ = newStmtNode(StmtKind::ReturnK, $1, $2);}
    ;
 
-scopedVarDecl : STATIC typeSpec varDeclList ';'    { $$ = $3; setType($3, $2, true);}
-   | typeSpec varDeclList ';'                { $$ = $2; setType($2, $1, false);}
-   ;
-
-stmt : matched                               { cout << "matched stmt- "; $$ = $1;}
-   | unmatched                               { $$ = $1;}
-   ;
-
-typeSpec : INT                               { $$ = ExpType::Integer;}
-   | BOOL                                    { $$ = ExpType::Boolean;}
-   | CHAR                                    { $$ = ExpType::Char;}
-   ;
-
-funDecl : typeSpec ID '(' parms ')' stmt     { $$ = newDeclNode(DeclKind::FuncK, $1, $2, $4, $6);}
-   | ID '(' parms ')' stmt                   { $$ = newDeclNode(DeclKind::FuncK, ExpType::Void, $1, $3, $5);}
-   ;
-
 breakstmt : BREAK ';'                        { $$ = newStmtNode(StmtKind::BreakK, $1);}
-   ;
-
-expstmt : exp ';'                            { cout << "expstmt- "; $$ = $1;}
    ;
 
 exp : mutable assignop exp                   { cout << "mutable: "; $$ = newExpNode(ExpKind::AssignK, $2, $1, $3); $$->isAssigned = true;} //CHECK HERE
@@ -291,20 +294,20 @@ mutable : ID                                 { $$ = newExpNode(ExpKind::IdK, $1)
    | ID '[' exp ']'                          {  $$ = newExpNode(ExpKind::IdK, $1, $3);  $$->isArray = true;}
    ;
 
-immutable : '(' exp ')'                      {  $$ = $2;}
-   | call                                    {  $$ = $1;}
+immutable : '(' exp ')'                      { cout << "immutable exp- "; $$ = $2;}
+   | call                                    { cout << "immutable call- "; $$ = $1;}
    | constant                                { cout << "constant- "; $$ = $1;}
    ;
 
-call : ID '(' args ')'                       {  $$ = newExpNode(ExpKind::CallK, $1, $3);}
+call : ID '(' args ')'                       { cout << "call ID- "; $$ = newExpNode(ExpKind::CallK, $1, $3);}
    ;
 
-args : argList                               {  $$ = $1;}
+args : argList                               { cout << "arglist- "; $$ = $1;}
    | /* empty */                             {  $$ = nullptr;}
    ;
 
-argList : argList ',' exp                    {  $$ = addSibling($1, $3);}
-   | exp                                     {  $$ = $1;}
+argList : argList ',' exp                    { cout << "arglist , exp- "; $$ = addSibling($1, $3);}
+   | exp                                     { cout << "argList exp- "; $$ = $1;}
    ;
 
 constant : NUMCONST                          { cout << "numconst- "; $$ = newExpNode(ExpKind::ConstantK, $1); $$->attr.value = $1->nvalue; }
