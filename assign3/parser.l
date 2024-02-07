@@ -15,6 +15,7 @@ char *lastToken=(char *)"";
 
 int setValue(int linenum, int tokenClass, char *svalue) {
     yylval.tinfo = new TokenData;
+
     yylval.tinfo->tokenclass = tokenClass;
     yylval.tinfo->linenum = linenum;
     yylval.tinfo->tokenstr = strdup(svalue);
@@ -27,15 +28,24 @@ int setValue(int linenum, int tokenClass, char *svalue) {
     switch (tokenClass) {
 
     case NUMCONST:
-         // yylval.tinfo->nvalue = hmmmm ..... I don't need this yet, but
+         yylval.tinfo->nvalue = stoi(svalue);
          break;
     case ID:
          yylval.tinfo->svalue = strdup(svalue);
          break;
 
-//     case OP:
-//          // yylval.tinfo->cvalue = hmmm..... What should I set it to?
-//          break;
+    case '=': // op
+    case '*':
+    case '+':
+    case '/':
+    case '%':
+    case '-':
+    case '<':
+    case '>':
+    case '?':
+    case ':':
+         yylval.tinfo->cvalue = svalue[0];
+         break;
     }
 
 
