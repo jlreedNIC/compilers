@@ -69,6 +69,69 @@ void setType(TreeNode *t, ExpType type, bool isStatic)
 // the syntax tree goes here
 TreeNode *syntaxTree;
 
+TreeNode *initTree(TreeNode *start)
+{
+   // new nodes to create
+   TreeNode *input, *output, *param_output;
+   TreeNode *inputb, *outputb, *param_outputb;
+   TreeNode *inputc, *outputc, *param_outputc;
+   TreeNode *outnl;
+
+   ///////// Stuff from next slides
+   input = newDeclNode(DeclKind::FuncK, ExpType::Integer);
+   input->lineno = -1; // all are -1
+   input->attr.name = strdup("input");
+   input->type = ExpType::Integer; // is this needed??
+
+   inputb = newDeclNode(DeclKind::FuncK, ExpType::Boolean);
+   inputb->lineno = -1;
+   inputb->attr.name = strdup("inputb");
+
+   inputc = newDeclNode(DeclKind::FuncK, ExpType::Boolean);
+   inputc->lineno = -1;
+   inputc->attr.name = strdup("inputc");
+
+   param_output = newDeclNode(DeclKind::ParamK, ExpType::Void);
+   param_output->lineno = -1;
+   param_output->attr.name = strdup("*dummy*");
+
+   output = newDeclNode(DeclKind::FuncK, ExpType::Void);
+   output->lineno = -1;
+   output->attr.name = strdup("output");
+
+   param_outputb = newDeclNode(DeclKind::ParamK, ExpType::Void);
+   param_outputb->lineno = -1;
+   param_outputb->attr.name = strdup("*dummy*");
+
+   outputb = newDeclNode(DeclKind::FuncK, ExpType::Void);
+   outputb->lineno = -1;
+   outputb->attr.name = strdup("outputb");
+
+   param_outputc = newDeclNode(DeclKind::ParamK, ExpType::Void);
+   param_outputc->lineno = -1;
+   param_outputc->attr.name = strdup("*dummy*");
+
+   outputc = newDeclNode(DeclKind::FuncK, ExpType::Void);
+   outputc->lineno = -1;
+   outputc->attr.name = strdup("outputc");
+
+   outnl = newDeclNode(DeclKind::FuncK, ExpType::Void);
+   outnl->lineno = -1;
+   outnl->attr.name = strdup("outnl");
+
+   // link them and prefix the tree we are interested in traversing.
+   // This will put the symbols in the symbol table.
+   input->sibling = output;
+   output->sibling = inputb;
+   inputb->sibling = outputb;
+   outputb->sibling = inputc;
+   inputc->sibling = outputc;
+   outputc->sibling = outnl;
+   outnl->sibling = start; // add in the tree we were given
+   
+   return input;
+}
+
 %}
 
 %union
