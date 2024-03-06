@@ -3,6 +3,7 @@
 #include "treeNodes.h"
 #include "treeUtils.h"
 #include "parser.tab.h" // This has to be the last include
+#include "dot.h"
 
 using namespace std;
 

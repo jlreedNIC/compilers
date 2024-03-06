@@ -435,7 +435,7 @@ int main(int argc, char **argv)
    {
       printTree(stdout, syntaxTree, true, true);
       if(dotAST) {
-         printDotTree(stdout, syntaxTree, false, false);
+         //printDotTree(stdout, syntaxTree, false, false);
       }
    }
    else 
