@@ -51,7 +51,7 @@ TreeNode *newDeclNode(DeclKind kind,
     // std::cout << "newDeclNode created of " << expTypeToStr(type) << "\n";
     // did in class
     TreeNode *newNode = new TreeNode;
-
+    // printf("treenode space allocated\n");
     newNode->size = 1;
     newNode->offset = 0;
 
@@ -62,17 +62,29 @@ TreeNode *newDeclNode(DeclKind kind,
     newNode->child[2] = c2;
     newNode->sibling = NULL;
 
+    // printf("testing2\n");
     newNode->type = type;
+    // printf("------test type set\n");
     newNode->nodeNum = nodeNumber++;
-    newNode->lineno = token->linenum;
-
-    newNode->attr.op = token->tokenclass;
-    newNode->attr.value = token->nvalue;
-    newNode->attr.cvalue = token->cvalue;
-    newNode->attr.name = token->svalue;
+    // printf("------test nodenum set\n");
+    if(token == NULL)
+    {
+        newNode->lineno = -1;
+        // newNode->attr.op = token->tokenclass;
+        // newNode->attr.value = token->nvalue;
+        // newNode->attr.cvalue = token->cvalue;
+        // newNode->attr.name = token->svalue;
+    }
+    else
+    {
+        newNode->lineno = token->linenum;
+        newNode->attr.op = token->tokenclass;
+        newNode->attr.value = token->nvalue;
+        newNode->attr.cvalue = token->cvalue;
+        newNode->attr.name = token->svalue;
     // newNode->attr.string = token->tokenstr;
-    
-
+    }
+    // printf("new node successfully created\n");
 
     return newNode;
 }
@@ -164,6 +176,7 @@ char *tokenToStr(int type)
 char result[100];
 char *expTypeToStr(ExpType type, bool isArray, bool isStatic)
 {
+    // printf("in exptypetostr function\n");
     char *str;
 
     if (type == ExpType::Void)
