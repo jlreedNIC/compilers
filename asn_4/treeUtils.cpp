@@ -202,6 +202,26 @@ char *expTypeToStr(ExpType type, bool isArray, bool isStatic)
     return result;
 }
 
+char result2[100];
+char *varKindtoStr(VarKind type)
+{
+    // enum VarKind {None, Local, Global, Parameter, LocalStatic};
+    char *str;
+
+    if (type == VarKind::LocalStatic)
+        str = (char *)"Local Static";
+    else if (type == VarKind::Local)
+        str = (char *)"Local";
+    else if (type == VarKind::Global)
+        str = (char *)"Global";
+    else if (type == VarKind::Parameter)
+        str = (char *)"Parameter";
+    else str = (char *)"None";
+
+    sprintf(result2, "%s", str);
+    return result2;
+}
+
 void printTreeNode(FILE *out, TreeNode *syntaxTree, bool showExpType, bool showAllocation)
 {
     if(syntaxTree->nodekind == NodeKind::DeclK)
@@ -288,6 +308,10 @@ void printTreeNode(FILE *out, TreeNode *syntaxTree, bool showExpType, bool showA
                         fprintf(out, " '%c'", syntaxTree->attr.cvalue);
                 }
                 else fprintf(out, " %d", syntaxTree->attr.value);
+                // if(showExpType)
+                // {
+                //     fprintf(out, " of %s", expTypeToStr(syntaxTree->type, syntaxTree->isArray, syntaxTree->isStatic));
+                // }
                 break;
             case ExpKind::IdK:
                 fprintf(out, "Id: %s", syntaxTree->attr.name);
@@ -299,8 +323,19 @@ void printTreeNode(FILE *out, TreeNode *syntaxTree, bool showExpType, bool showA
                 fprintf(out, "Hey I'm a ExpK node.");
                 break;
         }
+        if(showExpType)
+        {
+            fprintf(out, " of %s", expTypeToStr(syntaxTree->type, syntaxTree->isArray, syntaxTree->isStatic));
+        }
     }
     else fprintf(out, "Hey I'm a node, say something here.");
+    
+
+    // if(showAllocation)
+    // {
+    //     fprintf(out, " [mem: %s]", varKindtoStr(syntaxTree->varKind));
+    // }
+
     fprintf(out, " [line: %d]", syntaxTree->lineno);
     return;
 }
