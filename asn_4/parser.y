@@ -7,6 +7,8 @@
 #include "treeNodes.h"
 #include "scanType.h"
 #include "dot.h"
+#include "semantics.h"
+#include "symbolTable.h"
 using namespace std;
 
 int numErrors;
@@ -431,6 +433,15 @@ int main(int argc, char **argv)
       yyparse();
       fclose (yyin);
    }
+   bool debugSymTab = true;
+   static int globalOffset = 0;
+
+   SymbolTable *symtab;
+   symtab = new SymbolTable();
+   symtab->debug(debugSymTab);
+   syntaxTree = semanticAnalysis(syntaxTree, true, false, symtab, globalOffset);
+
+
    if (numErrors==0) 
    {
       printTree(stdout, syntaxTree, true, true);
