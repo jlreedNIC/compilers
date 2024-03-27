@@ -11,3 +11,5 @@ TreeNode *semanticAnalysis(TreeNode *syntree,         // pass in and return an a
                            SymbolTable *symtabX,      // pass in and return the symbol table
                            int &globalOffset          // return the offset past the globals
 );
+
+void treeTraverse(TreeNode *syntree, SymbolTable *symtab);

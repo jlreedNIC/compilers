@@ -1,4 +1,7 @@
 #include "semantics.h"
+#include "parser.tab.h" //always put this last
+static int goffset;
+static int foffset;
 
 TreeNode *loadIOLib(TreeNode *start)
 {
@@ -85,5 +88,11 @@ TreeNode *semanticAnalysis(TreeNode *syntree,          // pass in and return an 
     )
 {
     syntree = loadIOLib(syntree);
+    
     return syntree;
+}
+
+void treeTraverse(TreeNode *syntree, SymbolTable *symtab)
+{
+    printf("starting tree traversal\n");
 }
