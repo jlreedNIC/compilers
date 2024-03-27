@@ -3,6 +3,8 @@
 #include "treeUtils.h"
 #include "symbolTable.h"
 
+void debugPrintf(const char *input);
+
 TreeNode *loadIOLib(TreeNode *start);
 
 TreeNode *semanticAnalysis(TreeNode *syntree,         // pass in and return an annotated syntax tree
@@ -13,3 +15,6 @@ TreeNode *semanticAnalysis(TreeNode *syntree,         // pass in and return an a
 );
 
 void treeTraverse(TreeNode *syntree, SymbolTable *symtab);
+void treeTraverseExp(TreeNode *syntree, SymbolTable *symtab);
+void treeTraverseStmt(TreeNode *syntree, SymbolTable *symtab);
+void treeTraverseDecl(TreeNode *syntree, SymbolTable *symtab);

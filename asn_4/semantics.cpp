@@ -3,6 +3,13 @@
 static int goffset;
 static int foffset;
 
+bool treeDebug = true;
+
+void debugPrintf(const char *input)
+{
+	if(treeDebug) printf("%s\n", input);
+}
+
 TreeNode *loadIOLib(TreeNode *start)
 {
     // printf("started load iolib\n");
@@ -94,5 +101,33 @@ TreeNode *semanticAnalysis(TreeNode *syntree,          // pass in and return an 
 
 void treeTraverse(TreeNode *syntree, SymbolTable *symtab)
 {
-    printf("starting tree traversal\n");
+    debugPrintf("starting tree traversal");
+
+    if(syntree->nodekind == NodeKind::DeclK)
+    {
+        treeTraverseDecl(syntree, symtab);
+    }
+    else if(syntree->nodekind == NodeKind::ExpK)
+    {
+        treeTraverseExp(syntree, symtab);
+    }
+    else if(syntree->nodekind == NodeKind::StmtK)
+    {
+        treeTraverseStmt(syntree, symtab);
+    }
+}
+
+void treeTraverseExp(TreeNode *syntree, SymbolTable *symtab)
+{
+    debugPrintf("tree traversal exp");
+}
+
+void treeTraverseStmt(TreeNode *syntree, SymbolTable *symtab)
+{
+    debugPrintf("tree traversal stmt");
+}
+
+void treeTraverseDecl(TreeNode *syntree, SymbolTable *symtab)
+{
+    debugPrintf("tree traversal decl");
 }
