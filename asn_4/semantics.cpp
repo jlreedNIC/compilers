@@ -218,8 +218,10 @@ void treeTraverseExp(TreeNode *syntree, SymbolTable *symtab)
 			// opk and assignk are similar
 		case AssignK:
 			debugPrintf("AssignK");
-			treeTraverse(c0, symtab);
-			treeTraverse(c1, symtab);
+			if(c0 != nullptr)
+                treeTraverse(c0, symtab);
+			if(c1 != nullptr)
+                treeTraverse(c1, symtab);
 			if(syntree->attr.op == int('+') || syntree->attr.op == int('['))
 			{
 				syntree->type = c0->type;
