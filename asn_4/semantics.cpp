@@ -111,21 +111,23 @@ TreeNode *semanticAnalysis(TreeNode *syntree,          // pass in and return an 
 void treeTraverse(TreeNode *syntree, SymbolTable *symtab)
 {
     debugPrintf("starting tree traversal");
-
-    if(syntree->nodekind == NodeKind::DeclK)
+    if(syntree != nullptr)
     {
-        treeTraverseDecl(syntree, symtab);
+        if(syntree->nodekind == NodeKind::DeclK)
+        {
+            treeTraverseDecl(syntree, symtab);
+        }
+        else if(syntree->nodekind == NodeKind::ExpK)
+        {
+            treeTraverseExp(syntree, symtab);
+        }
+        else if(syntree->nodekind == NodeKind::StmtK)
+        {
+            treeTraverseStmt(syntree, symtab);
+        }
+        if(syntree->sibling != nullptr)
+            treeTraverse(syntree->sibling, symtab);
     }
-    else if(syntree->nodekind == NodeKind::ExpK)
-    {
-        treeTraverseExp(syntree, symtab);
-    }
-    else if(syntree->nodekind == NodeKind::StmtK)
-    {
-        treeTraverseStmt(syntree, symtab);
-    }
-    if(syntree->sibling != nullptr)
-        treeTraverse(syntree->sibling, symtab);
 }
 
 void treeTraverseDecl(TreeNode *syntree, SymbolTable *symtab)
@@ -143,14 +145,12 @@ void treeTraverseDecl(TreeNode *syntree, SymbolTable *symtab)
             insertCheck(syntree, symtab);
             symtab->enter(syntree->attr.name);
 
-            if(c0 != nullptr)
-                treeTraverse(c0, symtab);
+            treeTraverse(c0, symtab);
 
             syntree->varKind = Global;
             syntree->size = foffset-1;  // why does this change work???
 
-            if(c1 != nullptr)
-                treeTraverse(c1, symtab);
+            treeTraverse(c1, symtab);
 
             symtab->leave();
             break;
@@ -218,10 +218,8 @@ void treeTraverseExp(TreeNode *syntree, SymbolTable *symtab)
 			// opk and assignk are similar
 		case AssignK:
 			debugPrintf("AssignK");
-			if(c0 != nullptr)
-                treeTraverse(c0, symtab);
-			if(c1 != nullptr)
-                treeTraverse(c1, symtab);
+			treeTraverse(c0, symtab);
+			treeTraverse(c1, symtab);
 			if(syntree->attr.op == int('+') || syntree->attr.op == int('['))
 			{
 				syntree->type = c0->type;
@@ -294,11 +292,9 @@ void treeTraverseStmt(TreeNode *syntree, SymbolTable *symtab)
 	{
 		case CompoundK:
 			debugPrintf("CompoundK");
-            if(c0 != nullptr)
-			    treeTraverse(c0, symtab);
+            treeTraverse(c0, symtab);
 			syntree->size = foffset-1;
-			if(c1 != nullptr)
-                treeTraverse(c1, symtab);
+			treeTraverse(c1, symtab);
 			break;
 		case ReturnK:
 			debugPrintf("ReturnK");
