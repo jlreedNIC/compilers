@@ -331,7 +331,7 @@ void printTreeNode(FILE *out, TreeNode *syntaxTree, bool showExpType, bool showA
     else fprintf(out, "Hey I'm a node, say something here.");
     
 
-    if(showAllocation)
+    if(showAllocation && (syntaxTree->varKind != VarKind::None || syntaxTree->size != 1))
     {
         fprintf(out, " [mem: %s loc: %d size: %d]", varKindtoStr(syntaxTree->varKind), syntaxTree->offset, syntaxTree->size);
     }
