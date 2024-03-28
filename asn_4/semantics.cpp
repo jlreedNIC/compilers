@@ -204,6 +204,78 @@ void treeTraverseDecl(TreeNode *syntree, SymbolTable *symtab)
 void treeTraverseExp(TreeNode *syntree, SymbolTable *symtab)
 {
     debugPrintf("tree traversal exp");
+    TreeNode *c0, *c1, *temp;
+	c0 = syntree->child[0];
+	c1 = syntree->child[1];
+	
+	switch(syntree->kind.exp)
+	{
+		case OpK:
+			debugPrintf("OpK");
+			// no break on purpose because
+			// opk and assignk are similar
+		case AssignK:
+			debugPrintf("AssignK");
+			treeTraverse(c0, symtab);
+			treeTraverse(c1, symtab);
+			if(syntree->attr.op == int('+') || syntree->attr.op == int('['))
+			{
+				syntree->type = c0->type;
+			}
+			else if(syntree->attr.op == AND || syntree->attr.op == OR || 
+                    syntree->attr.op == GEQ || 
+                    syntree->attr.op == LEQ || 
+                    syntree->attr.op == int('<') || 
+                    syntree->attr.op == int('>') || 
+                    syntree->attr.op == EQ || 
+                    syntree->attr.op == NEQ || 
+                    syntree->attr.op == NOT)
+			{
+				syntree->type = ExpType::Boolean;
+			}
+			else
+			{
+				syntree->type = ExpType::Integer;
+			}
+			break;
+		case CallK:
+			debugPrintf("CallK");
+			if(temp = (TreeNode *)(symtab->lookup(syntree->attr.name)))
+			{
+				temp->isUsed = true;
+				syntree->type = temp->type;
+				syntree->size = temp->size;
+			}
+			else
+			{
+				// THIS LOOKS LIKE AN ERROR CONDITION
+			}
+			break;
+		case ConstantK:
+			debugPrintf("ConstantK");
+			syntree->isConst = true; // is it isConst???
+			break;
+		case IdK:
+			debugPrintf("IdK");
+			if(temp = (TreeNode*)(symtab->lookup(syntree->attr.name)))
+			{
+				temp->isUsed = true;
+				syntree->type = temp->type;
+				syntree->isStatic = temp->isStatic;
+				syntree->isArray = temp->isArray;
+				syntree->size = temp->size;
+				syntree->varKind = temp->varKind;
+				syntree->offset = temp->offset;
+			}
+			else
+			{
+				// PROBABLY AN ERROR
+			}
+			break;
+		default:
+			// put something here
+            debugPrintf("unknown exp kind");
+        }
 }
 
 void treeTraverseStmt(TreeNode *syntree, SymbolTable *symtab)
