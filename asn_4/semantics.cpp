@@ -158,7 +158,7 @@ void treeTraverseDecl(TreeNode *syntree, SymbolTable *symtab)
             debugPrintf("VarK");
             if(c0 != NULL)
             {
-                debugPrintf("no null child");
+                debugPrintf("has child");
                 syntree->varKind = Local;
                 syntree->isAssigned = true;
                 treeTraverse(c0, symtab);
@@ -188,10 +188,12 @@ void treeTraverseDecl(TreeNode *syntree, SymbolTable *symtab)
             
             if(syntree->kind.decl == ParamK)
             {
+                debugPrintf("param kind again");
                 syntree->varKind = Parameter;
             }
             else if(syntree->isArray)
             {
+                debugPrintf("array");
                 syntree->offset--;
             }
             
@@ -290,9 +292,11 @@ void treeTraverseStmt(TreeNode *syntree, SymbolTable *symtab)
 	{
 		case CompoundK:
 			debugPrintf("CompoundK");
-			treeTraverse(c0, symtab);
+            if(c0 != nullptr)
+			    treeTraverse(c0, symtab);
 			syntree->size = foffset-1;
-			treeTraverse(c1, symtab);
+			if(c1 != nullptr)
+                treeTraverse(c1, symtab);
 			break;
 		case ReturnK:
 			debugPrintf("ReturnK");
