@@ -158,6 +158,8 @@ void treeTraverseDecl(TreeNode *syntree, SymbolTable *symtab)
             debugPrintf("VarK");
             if(c0 != NULL)
             {
+                debugPrintf("no null child");
+                syntree->varKind = Local;
                 syntree->isAssigned = true;
                 treeTraverse(c0, symtab);
             }
@@ -178,7 +180,7 @@ void treeTraverseDecl(TreeNode *syntree, SymbolTable *symtab)
                 }
                 else
                 {
-                    syntree->varKind = Global;
+                    syntree->varKind = Local;
                     syntree->offset = foffset-1; // change here works???
                     foffset -= syntree->size;
                 }
@@ -207,4 +209,39 @@ void treeTraverseExp(TreeNode *syntree, SymbolTable *symtab)
 void treeTraverseStmt(TreeNode *syntree, SymbolTable *symtab)
 {
     debugPrintf("tree traversal stmt");
+
+	TreeNode *c0, *c1, *temp;
+	c0 = syntree->child[0];
+	c1 = syntree->child[1];
+	
+	switch(syntree->kind.stmt)
+	{
+		case CompoundK:
+			debugPrintf("CompoundK");
+			treeTraverse(c0, symtab);
+			syntree->size = foffset-1;
+			treeTraverse(c1, symtab);
+			break;
+		case ReturnK:
+			debugPrintf("ReturnK");
+			break;
+		case IfK:
+			debugPrintf("IfK");
+			break;
+		case WhileK:
+			debugPrintf("WhileK");
+			break;
+		case ForK:
+			debugPrintf("ForK");
+			break;
+		case BreakK:
+			debugPrintf("BreakK");
+			break;
+		case RangeK:
+			debugPrintf("RangeK");
+			break;
+		default:
+			// put something here
+            debugPrintf("unknown stmt kind");
+    }
 }
