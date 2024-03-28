@@ -3,7 +3,7 @@
 static int goffset; // size?
 static int foffset; // location?
 
-bool treeDebug = false;
+bool treeDebug = true;
 
 void debugPrintf(const char *input)
 {
@@ -284,11 +284,12 @@ void treeTraverseStmt(TreeNode *syntree, SymbolTable *symtab)
 {
     debugPrintf("tree traversal stmt");
 
-	TreeNode *c0, *c1, *temp;
+	TreeNode *c0, *c1, *c2, *temp;
 	c0 = syntree->child[0];
 	c1 = syntree->child[1];
-	
-	switch(syntree->kind.stmt)
+    c2 = syntree->child[2];
+
+    switch(syntree->kind.stmt)
 	{
 		case CompoundK:
 			debugPrintf("CompoundK");
@@ -298,21 +299,44 @@ void treeTraverseStmt(TreeNode *syntree, SymbolTable *symtab)
 			break;
 		case ReturnK:
 			debugPrintf("ReturnK");
-			break;
-		case IfK:
+
+            treeTraverse(c0, symtab);
+            break;
+        case IfK:
 			debugPrintf("IfK");
-			break;
-		case WhileK:
+            // foffset = -1;
+            
+            treeTraverse(c0, symtab);
+            syntree->size = foffset-1;
+            treeTraverse(c1, symtab);
+            treeTraverse(c2, symtab);
+            break;
+        case WhileK:
 			debugPrintf("WhileK");
 			break;
 		case ForK:
 			debugPrintf("ForK");
-			break;
-		case BreakK:
+            // syntree->size = foffset-1;
+            treeTraverse(c0, symtab);
+            // syntree->size--;
+            foffset--;
+            treeTraverse(c1, symtab);
+            // syntree->size--;
+            foffset--;
+            treeTraverse(c2, symtab);
+            // syntree->size--;
+            foffset--;
+            syntree->size = foffset;
+            break;
+        case BreakK:
 			debugPrintf("BreakK");
 			break;
 		case RangeK:
 			debugPrintf("RangeK");
+            // syntree->size = foffset-1;
+            treeTraverse(c0, symtab);
+            treeTraverse(c1, symtab);
+            treeTraverse(c2, symtab);
 			break;
 		default:
 			// put something here
