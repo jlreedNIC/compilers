@@ -433,7 +433,7 @@ int main(int argc, char **argv)
       yyparse();
       fclose (yyin);
    }
-   bool debugSymTab = true;
+   bool debugSymTab = false;
    static int globalOffset = 0;
 
    SymbolTable *symtab;

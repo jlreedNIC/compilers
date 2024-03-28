@@ -4,6 +4,7 @@
 #include "symbolTable.h"
 
 void debugPrintf(const char *input);
+bool insertCheck(TreeNode *syntree, SymbolTable *symtab);
 
 TreeNode *loadIOLib(TreeNode *start);
 
@@ -15,6 +16,7 @@ TreeNode *semanticAnalysis(TreeNode *syntree,         // pass in and return an a
 );
 
 void treeTraverse(TreeNode *syntree, SymbolTable *symtab);
+
+void treeTraverseDecl(TreeNode *syntree, SymbolTable *symtab);
 void treeTraverseExp(TreeNode *syntree, SymbolTable *symtab);
 void treeTraverseStmt(TreeNode *syntree, SymbolTable *symtab);
-void treeTraverseDecl(TreeNode *syntree, SymbolTable *symtab);

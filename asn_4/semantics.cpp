@@ -1,13 +1,22 @@
 #include "semantics.h"
 #include "parser.tab.h" //always put this last
-static int goffset;
-static int foffset;
+static int goffset; // size?
+static int foffset; // location?
 
-bool treeDebug = true;
+bool treeDebug = false;
 
 void debugPrintf(const char *input)
 {
 	if(treeDebug) printf("%s\n", input);
+}
+
+bool insertCheck(TreeNode *syntree, SymbolTable *symtab)
+{
+	if(!symtab->insert(syntree->attr.name, syntree)) 
+	{
+		return false;
+	}
+	return true;
 }
 
 TreeNode *loadIOLib(TreeNode *start)
@@ -115,6 +124,79 @@ void treeTraverse(TreeNode *syntree, SymbolTable *symtab)
     {
         treeTraverseStmt(syntree, symtab);
     }
+    if(syntree->sibling != nullptr)
+        treeTraverse(syntree->sibling, symtab);
+}
+
+void treeTraverseDecl(TreeNode *syntree, SymbolTable *symtab)
+{
+    debugPrintf("tree traversal decl");
+    TreeNode *c0, *c1, *temp;
+    c0 = syntree->child[0];
+    c1 = syntree->child[1];
+
+    switch(syntree->kind.decl)
+    {
+        case FuncK:
+            debugPrintf("case funck");
+            foffset = -1;
+            insertCheck(syntree, symtab);
+            symtab->enter(syntree->attr.name);
+
+            if(c0 != nullptr)
+                treeTraverse(c0, symtab);
+
+            syntree->varKind = Global;
+            syntree->size = foffset-1;  // why does this change work???
+
+            if(c1 != nullptr)
+                treeTraverse(c1, symtab);
+
+            symtab->leave();
+            break;
+        case VarK:
+            debugPrintf("VarK");
+            if(c0 != NULL)
+            {
+                syntree->isAssigned = true;
+                treeTraverse(c0, symtab);
+            }
+            // no break on purpose
+        case ParamK:
+            debugPrintf("ParamK");
+            if(insertCheck(syntree, symtab) )
+            {
+                if(symtab->depth() == 1)
+                {
+                    syntree->varKind = Global;
+                    syntree->offset = goffset;
+                    goffset -= syntree->size;
+                }
+                else if(syntree->isStatic)
+                {
+                    ///// REMEMBER TO FINISH THIS
+                }
+                else
+                {
+                    syntree->varKind = Global;
+                    syntree->offset = foffset-1; // change here works???
+                    foffset -= syntree->size;
+                }
+            }
+            
+            if(syntree->kind.decl == ParamK)
+            {
+                syntree->varKind = Parameter;
+            }
+            else if(syntree->isArray)
+            {
+                syntree->offset--;
+            }
+            
+            break;
+        default:
+            debugPrintf("Unknown kind.decl");
+    }
 }
 
 void treeTraverseExp(TreeNode *syntree, SymbolTable *symtab)
@@ -125,9 +207,4 @@ void treeTraverseExp(TreeNode *syntree, SymbolTable *symtab)
 void treeTraverseStmt(TreeNode *syntree, SymbolTable *symtab)
 {
     debugPrintf("tree traversal stmt");
-}
-
-void treeTraverseDecl(TreeNode *syntree, SymbolTable *symtab)
-{
-    debugPrintf("tree traversal decl");
 }
