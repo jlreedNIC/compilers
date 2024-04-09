@@ -220,8 +220,9 @@ void treeTraverseExp(TreeNode *syntree, SymbolTable *symtab)
 			debugPrintf("AssignK");
 			treeTraverse(c0, symtab);
 			treeTraverse(c1, symtab);
-			if(syntree->attr.op == int('+') || syntree->attr.op == int('['))
-			{
+
+            if (syntree->attr.op == int('+') || syntree->attr.op == int('['))
+            {
 				syntree->type = c0->type;
 			}
 			else if(syntree->attr.op == AND || syntree->attr.op == OR || 
@@ -229,7 +230,8 @@ void treeTraverseExp(TreeNode *syntree, SymbolTable *symtab)
                     syntree->attr.op == LEQ || 
                     syntree->attr.op == int('<') || 
                     syntree->attr.op == int('>') || 
-                    syntree->attr.op == EQ || 
+                    syntree->attr.op == int('=') || 
+                    syntree->attr.op == EQ ||
                     syntree->attr.op == NEQ || 
                     syntree->attr.op == NOT)
 			{
@@ -338,8 +340,8 @@ void treeTraverseStmt(TreeNode *syntree, SymbolTable *symtab)
             treeTraverse(c0, symtab);
             treeTraverse(c1, symtab);
             treeTraverse(c2, symtab);
-			break;
-		default:
+            break;
+        default:
 			// put something here
             debugPrintf("unknown stmt kind");
     }
