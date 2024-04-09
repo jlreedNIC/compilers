@@ -141,14 +141,14 @@ void treeTraverseDecl(TreeNode *syntree, SymbolTable *symtab)
     {
         case FuncK:
             debugPrintf("case funck");
-            foffset = -1;
+            foffset = -2;
             insertCheck(syntree, symtab);
             symtab->enter(syntree->attr.name);
 
             treeTraverse(c0, symtab);
 
             syntree->varKind = Global;
-            syntree->size = foffset-1;  // why does this change work???
+            syntree->size = foffset;  // why does this change work???
 
             treeTraverse(c1, symtab);
 
@@ -181,7 +181,7 @@ void treeTraverseDecl(TreeNode *syntree, SymbolTable *symtab)
                 else
                 {
                     syntree->varKind = Local;
-                    syntree->offset = foffset-1; // change here works???
+                    syntree->offset = foffset; // change here works???
                     foffset -= syntree->size;
                 }
             }
@@ -292,9 +292,10 @@ void treeTraverseStmt(TreeNode *syntree, SymbolTable *symtab)
     switch(syntree->kind.stmt)
 	{
 		case CompoundK:
-			debugPrintf("CompoundK");
+            // foffset = -2;
+            debugPrintf("CompoundK");
             treeTraverse(c0, symtab);
-			syntree->size = foffset-1;
+			syntree->size = foffset;
 			treeTraverse(c1, symtab);
 			break;
 		case ReturnK:
@@ -307,7 +308,7 @@ void treeTraverseStmt(TreeNode *syntree, SymbolTable *symtab)
             // foffset = -1;
             
             treeTraverse(c0, symtab);
-            syntree->size = foffset-1;
+            syntree->size = foffset;
             treeTraverse(c1, symtab);
             treeTraverse(c2, symtab);
             break;
@@ -325,13 +326,13 @@ void treeTraverseStmt(TreeNode *syntree, SymbolTable *symtab)
             foffset--;
             treeTraverse(c2, symtab);
             // syntree->size--;
-            foffset--;
+            // foffset--;
             syntree->size = foffset;
             break;
         case BreakK:
 			debugPrintf("BreakK");
-			break;
-		case RangeK:
+            break;
+        case RangeK:
 			debugPrintf("RangeK");
             // syntree->size = foffset-1;
             treeTraverse(c0, symtab);
