@@ -3,7 +3,7 @@
 static int goffset; // size?
 static int foffset; // location?
 
-bool treeDebug = true;
+bool treeDebug = false;
 
 void debugPrintf(const char *input)
 {
@@ -201,7 +201,7 @@ void treeTraverseDecl(TreeNode *syntree, SymbolTable *symtab)
                 debugPrintf("array");
                 syntree->offset--;
             }
-            
+
             break;
         default:
             debugPrintf("Unknown kind.decl");
@@ -314,6 +314,7 @@ void treeTraverseStmt(TreeNode *syntree, SymbolTable *symtab)
             debugPrintf("CompoundK");
             // if new scope
             // how do we determine new scope??
+            tempOffset = foffset;
             symtab->enter((char *)"compoundStmt"); // enter new scope for compound statement
 
             treeTraverse(c0, symtab);
@@ -321,8 +322,9 @@ void treeTraverseStmt(TreeNode *syntree, SymbolTable *symtab)
             syntree->size = foffset;
 			treeTraverse(c1, symtab);
             // what stuff goes here?
-
+            
             symtab->leave(); // leave scope
+            foffset = tempOffset;
             break;
         case ReturnK:
 			debugPrintf("ReturnK");
