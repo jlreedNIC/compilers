@@ -296,9 +296,9 @@ void treeTraverseStmt(TreeNode *syntree, SymbolTable *symtab)
     switch(syntree->kind.stmt)
 	{
 		case CompoundK:
-            // foffset = -2;
             debugPrintf("CompoundK");
-
+            // if new scope
+            // how do we determine new scope??
             symtab->enter((char *)"compoundStmt"); // enter new scope for compound statement
 
             treeTraverse(c0, symtab);
@@ -316,19 +316,28 @@ void treeTraverseStmt(TreeNode *syntree, SymbolTable *symtab)
             break;
         case IfK:
 			debugPrintf("IfK");
-            // foffset = -1;
             
+            symtab->enter((char *)"ifStmt");
+
             treeTraverse(c0, symtab);
-            syntree->size = foffset;
             treeTraverse(c1, symtab);
             treeTraverse(c2, symtab);
+
+            symtab->leave(); // leave scope
             break;
         case WhileK:
 			debugPrintf("WhileK");
-			break;
-		case ForK:
+
+            symtab->enter((char *)"whileStmt");
+
+            treeTraverse(c0, symtab);
+			treeTraverse(c1, symtab);
+
+            symtab->leave(); // leave scope
+            break;
+        case ForK:
 			debugPrintf("ForK");
-            // syntree->size = foffset-1;
+            
             symtab->enter((char *)"forStmt");
 
             // remember current offset
@@ -348,7 +357,7 @@ void treeTraverseStmt(TreeNode *syntree, SymbolTable *symtab)
             break;
         case RangeK:
 			debugPrintf("RangeK");
-            // syntree->size = foffset-1;
+            
             treeTraverse(c0, symtab);
             treeTraverse(c1, symtab);
             treeTraverse(c2, symtab);
