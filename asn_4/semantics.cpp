@@ -142,7 +142,7 @@ void treeTraverseDecl(TreeNode *syntree, SymbolTable *symtab)
         case FuncK:
             debugPrintf("case funck");
             foffset = -2;
-            insertCheck(syntree, symtab);
+            insertCheck(syntree, symtab); // should return a bool we need to check?
             symtab->enter(syntree->attr.name);
 
             treeTraverse(c0, symtab);
@@ -286,7 +286,9 @@ void treeTraverseStmt(TreeNode *syntree, SymbolTable *symtab)
 {
     debugPrintf("tree traversal stmt");
 
-	TreeNode *c0, *c1, *c2, *temp;
+    int tempOffset;
+
+    TreeNode *c0, *c1, *c2, *temp;
 	c0 = syntree->child[0];
 	c1 = syntree->child[1];
     c2 = syntree->child[2];
@@ -296,11 +298,18 @@ void treeTraverseStmt(TreeNode *syntree, SymbolTable *symtab)
 		case CompoundK:
             // foffset = -2;
             debugPrintf("CompoundK");
+
+            symtab->enter((char *)"compoundStmt"); // enter new scope for compound statement
+
             treeTraverse(c0, symtab);
-			syntree->size = foffset;
+            // what other stuff goes here?
+            syntree->size = foffset;
 			treeTraverse(c1, symtab);
-			break;
-		case ReturnK:
+            // what stuff goes here?
+
+            symtab->leave(); // leave scope
+            break;
+        case ReturnK:
 			debugPrintf("ReturnK");
 
             treeTraverse(c0, symtab);
@@ -320,16 +329,19 @@ void treeTraverseStmt(TreeNode *syntree, SymbolTable *symtab)
 		case ForK:
 			debugPrintf("ForK");
             // syntree->size = foffset-1;
+            symtab->enter((char *)"forStmt");
+
+            // remember current offset
+            tempOffset = foffset;
+
             treeTraverse(c0, symtab);
-            // syntree->size--;
-            foffset--;
-            treeTraverse(c1, symtab);
-            // syntree->size--;
-            foffset--;
-            treeTraverse(c2, symtab);
-            // syntree->size--;
-            // foffset--;
+            foffset -= 2;
             syntree->size = foffset;
+            treeTraverse(c1, symtab);
+            treeTraverse(c2, symtab);
+            foffset = tempOffset;
+
+            symtab->leave();
             break;
         case BreakK:
 			debugPrintf("BreakK");
