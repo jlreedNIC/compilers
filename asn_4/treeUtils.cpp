@@ -209,7 +209,7 @@ char *varKindtoStr(VarKind type)
     char *str;
 
     if (type == VarKind::LocalStatic)
-        str = (char *)"Local Static";
+        str = (char *)"LocalStatic";
     else if (type == VarKind::Local)
         str = (char *)"Local";
     else if (type == VarKind::Global)
