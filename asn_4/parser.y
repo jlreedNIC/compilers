@@ -147,7 +147,8 @@ varDeclInit : varDeclId                      { $$ = $1; printDebug("varDeclId");
    ;
 
 varDeclId : ID                               { $$ = newDeclNode(DeclKind::VarK, UndefinedType, $1); $$->isArray = false;}
-   | ID '[' NUMCONST ']'                     { $$ = newDeclNode(DeclKind::VarK, UndefinedType, $1); $$->isArray = true;}
+   | ID '[' NUMCONST ']'                     { $$ = newDeclNode(DeclKind::VarK, UndefinedType, $1); $$->isArray = true;
+                                               $$->size = $3->nvalue + 1;}
    ;
 
 typeSpec : INT                               { $$ = ExpType::Integer;}
@@ -338,6 +339,7 @@ constant : NUMCONST                          { $$ = newExpNode(ExpKind::Constant
          | STRINGCONST                       { $$ = newExpNode(ExpKind::ConstantK, $1); 
                                                $$->type = ExpType::Char; 
                                                $$->isArray = true; 
+                                               $$->size = strlen($1->svalue)-1;
                                                printDebug("stringconst"); }
          | BOOLCONST                         { $$ = newExpNode(ExpKind::ConstantK, $1); 
                                                $$->type = ExpType::Boolean; 
