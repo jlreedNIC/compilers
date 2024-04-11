@@ -177,6 +177,11 @@ void treeTraverseDecl(TreeNode *syntree, SymbolTable *symtab)
                 else if(syntree->isStatic)
                 {
                     ///// REMEMBER TO FINISH THIS
+                    syntree->varKind = LocalStatic;
+                    syntree->offset = goffset;
+                    goffset -= syntree->size;
+
+                    symtab->insertGlobal(syntree->attr.name, syntree);
                 }
                 else
                 {
@@ -221,7 +226,7 @@ void treeTraverseExp(TreeNode *syntree, SymbolTable *symtab)
 			treeTraverse(c0, symtab);
 			treeTraverse(c1, symtab);
 
-            if (syntree->attr.op == int('+') || syntree->attr.op == int('['))
+            if (syntree->attr.op == int('+') || syntree->attr.op == int('[') || syntree->attr.op == int('='))
             {
 				syntree->type = c0->type;
 			}
@@ -230,7 +235,7 @@ void treeTraverseExp(TreeNode *syntree, SymbolTable *symtab)
                     syntree->attr.op == LEQ || 
                     syntree->attr.op == int('<') || 
                     syntree->attr.op == int('>') || 
-                    syntree->attr.op == int('=') || 
+                    // syntree->attr.op == int('=') || 
                     syntree->attr.op == EQ ||
                     syntree->attr.op == NEQ || 
                     syntree->attr.op == NOT)
@@ -244,20 +249,30 @@ void treeTraverseExp(TreeNode *syntree, SymbolTable *symtab)
 			break;
 		case CallK:
 			debugPrintf("CallK");
-			if(temp = (TreeNode *)(symtab->lookup(syntree->attr.name)))
-			{
+
+            treeTraverse(c0, symtab);
+            treeTraverse(c1, symtab);
+            if (temp = (TreeNode *)(symtab->lookup(syntree->attr.name)))
+            {
 				temp->isUsed = true;
 				syntree->type = temp->type;
-				syntree->size = temp->size;
-			}
-			else
+				// syntree->size = temp->size; // don't we need this??
+            }
+            else
 			{
 				// THIS LOOKS LIKE AN ERROR CONDITION
 			}
 			break;
 		case ConstantK:
 			debugPrintf("ConstantK");
-			syntree->isConst = true; // is it isConst???
+            
+            if(syntree->type == Char && syntree->isArray)
+            {
+                syntree->varKind = Global;
+                syntree->offset = goffset - 1;
+                goffset -= syntree->size;
+            }
+            syntree->isConst = true; // is it isConst???
 			break;
 		case IdK:
 			debugPrintf("IdK");
