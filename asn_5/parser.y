@@ -9,6 +9,8 @@
 #include "dot.h"
 #include "semantics.h"
 #include "symbolTable.h"
+#include "codegen.h"
+#include "yyerror.h"
 using namespace std;
 
 int numErrors;
@@ -17,8 +19,9 @@ extern int line;
 extern "C" int yylex();
 extern "C" int yyparse();
 extern "C" FILE *yyin;
+// extern yyerror();
 
-void yyerror(const char *msg);
+// void yyerror(const char *msg);
 
 bool debug = false;
 void printDebug(string msg)
@@ -234,7 +237,7 @@ exp : mutable assignop exp                   { $$ = newExpNode(ExpKind::AssignK,
    | mutable INC                             { $$ = newExpNode(ExpKind::AssignK, $2, $1);}
    | mutable DEC                             { $$ = newExpNode(ExpKind::AssignK, $2, $1);}
    | simpleExp                               { $$ = $1; printDebug("simpleExp"); }
-   | mutable assignop ERROR                  { $$ = newExpNode(ExpKind::AssignK, $2, $1); yyerror($3->tokenstr); printDebug("mutable error"); }
+   | mutable assignop ERROR                  { $$ = newExpNode(ExpKind::AssignK, $2, $1); yyerror("error here is a test"); printDebug("mutable error"); }
    ;
 
 assignop : '='                               { $$ = $1; }
@@ -349,10 +352,11 @@ constant : NUMCONST                          { $$ = newExpNode(ExpKind::Constant
 
 /* assignment or const */
 %%
-void yyerror (const char *msg)
-{ 
-   cout << "Error: " <<  msg << endl;
-}
+// void yyerror (const char *msg)
+// { 
+//    // cout << "SYNTAX ERROR(" << yylval.tinfo->linenum << "): " << msg << endl;
+//    cout << "Error: " <<  msg << endl;
+// }
 
 /*
 char *largerTokens[LASTTERM+1]; // used in the utils.cpp file printing routines
@@ -402,6 +406,7 @@ void initTokenStrings()
 
 int main(int argc, char **argv) 
 {
+   initErrorProcessing();
    yylval.tinfo = (TokenData*)malloc(sizeof(TokenData));
    yylval.tree = (TreeNode*)malloc(sizeof(TreeNode));
    yylval.tinfo->linenum = 1;

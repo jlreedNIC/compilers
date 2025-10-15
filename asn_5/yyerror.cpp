@@ -155,21 +155,27 @@ static void tinySort(char *base[], int num, int step, bool up)
 // It only does errors and not warnings.   
 void yyerror(const char *msg)
 {
+    printf("made it here\n");
+    printf("%s\n", msg);
     char *space;
     char *strs[100];
     int numstrs;
 
     // make a copy of msg string
     space = strdup(msg);
-
+    printf("made it here2\n");
     // split out components
     numstrs = split(space, strs, ' ');
+    printf("made it here3 %d\n", numstrs);
     if (numstrs>4) trim(strs[3]);
+    printf("made it here4\n");
 
     // translate components
     for (int i=3; i<numstrs; i+=2) {
+        printf("made it here6\n");
         strs[i] = niceTokenStr(strs[i]);
     }
+    printf("made it here5\n");
 
     // print components
     printf("ERROR(%d): Syntax error, unexpected %s", line, strs[3]);
